@@ -5,21 +5,22 @@ font-family: 'Oswald', sans-serif;
 font-family: 'Passion One', cursive; */
 
 :root{
-   --red: #ac0000;
-   --white: #ffffff;
-   --black-header: #151515;
-   --black: #171717;
-   --blue: #1877f2;
+  --red: #ac0000;
+  --white: #ffffff;
+  --black-header: #151515;
+  --black: #171717;
+  --blue: #1877f2;
 }
 
 * {
-   box-sizing: border-box;
- }
- 
- body {
-   font-family: 'Lato', sans-serif;
- }
- 
- .root {
-   min-height: 100vh;
- }
+  box-sizing: border-box;
+}
+  
+body {
+  font-family: 'Lato', sans-serif;
+  background-color: #333333;
+}
+  
+.root {
+  min-height: 100vh;
+}
