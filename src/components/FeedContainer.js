@@ -7,6 +7,12 @@ const FeedContainer = styled.div`
   display: flex;
   align-items: center;
   background-color: #333333;
+  margin-top: 150px;
+
+  @media (max-width: 620px) {
+    width: 100%;
+    margin-top: 91px;
+  }
 `;
 
 export { FeedContainer };

@@ -5,7 +5,7 @@ function Loader() {
   return (
     <Container>
       <p>Loading Posts</p>
-      <SyncLoader color="white" size="5" />
+      <SyncLoader color="white" size={5} />
     </Container>
   );
 }
