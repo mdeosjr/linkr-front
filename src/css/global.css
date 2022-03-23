@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Oswald:wght@700&family=Passion+One:wght@700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Oswald:wght@700&family=Passion+One:wght@700&display=swap");
 
 /* font-family: 'Lato', sans-serif;
 font-family: 'Oswald', sans-serif;
 font-family: 'Passion One', cursive; */
+
 
 :root{
   --red: #ac0000;
@@ -14,13 +15,19 @@ font-family: 'Passion One', cursive; */
 
 * {
   box-sizing: border-box;
+  font-family: "Lato", sans-serif;
 }
-  
+
 body {
-  font-family: 'Lato', sans-serif;
+  font-family: "Lato", sans-serif;
   background-color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
-  
+
 .root {
   min-height: 100vh;
 }
+
