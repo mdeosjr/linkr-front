@@ -14,27 +14,12 @@ import {
   UserImg,
   UserName,
 } from "../../components/Post.js";
-import {
-  Header,
-  HeaderLogo,
-  HeaderUser,
-  HeaderUserImage,
-} from "../../components/Header.js";
-import downArrow from "../../assets/DownArrow.svg";
+import Header from "../../components/Header/index.js";
 
 export default function Timeline() {
   return (
     <>
-      <Header>
-        <HeaderLogo>linkr</HeaderLogo>
-        <HeaderUser>
-          <img src={downArrow} alt="arrow" />
-          <HeaderUserImage
-            src="https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=400&q=60"
-            alr="user"
-          />
-        </HeaderUser>
-      </Header>
+      <Header />
       <FeedContainer>
         <PageTitle>timeline</PageTitle>
 

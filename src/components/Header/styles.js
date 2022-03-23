@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const Header = styled.div`
+const HeaderContainer = styled.div`
   width: 100%;
   background-color: #151515;
   height: 72px;
@@ -11,6 +11,7 @@ const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  z-index: 100;
 `;
 
 const HeaderLogo = styled.p`
@@ -37,6 +38,7 @@ const HeaderUser = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 `;
 
 const HeaderUserImage = styled.img`
@@ -51,4 +53,34 @@ const HeaderUserImage = styled.img`
   }
 `;
 
-export { Header, HeaderLogo, HeaderUser, HeaderUserImage };
+const HeaderLogout = styled.div`
+  background-color: #171717;
+  width: 130px;
+  height: 47px;
+  border-radius: 0px 0px 0px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  right: 0px;
+  top: 72px;
+  a {
+    text-decoration: none;
+    font-family: "Lato";
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 20px;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+  }
+`;
+
+export {
+  HeaderContainer,
+  HeaderLogo,
+  HeaderUser,
+  HeaderUserImage,
+  HeaderLogout,
+};
