@@ -36,7 +36,7 @@ export default function Timeline() {
         console.log(error);
       });
     }
-  });
+  }, [posts]);
 
   return (
     <>

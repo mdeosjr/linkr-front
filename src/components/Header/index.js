@@ -9,9 +9,10 @@ import {
 import downArrow from "../../assets/DownArrow.svg";
 import upArrow from "../../assets/UpArrow.svg";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Header() {
+  const navigate = useNavigate();
   const [toggleLogout, setToggleLogout] = useState(false);
 
   const HandleClick = () => {
@@ -20,6 +21,7 @@ export default function Header() {
 
   const logoutUser = () => {
     localStorage.removeItem("auth");
+    navigate("/");
   };
 
   return (
