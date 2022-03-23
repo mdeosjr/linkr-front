@@ -13,18 +13,29 @@ import {
   PostWarning,
   UserImg,
   UserName,
+  TrashIcon
 } from "../../components/Post.js";
 import Header from "../../components/Header/index.js";
+import trash from "../../assets/lixeira.svg";
+import Modal from "react-modal";
+import { useState } from "react";
 
 export default function Timeline() {
+  const [modalIsOpen,setModalIsOpen]= useState(false);
+
+  function openModal(){
+    setModalIsOpen(true);
+  }
+  
+  console.log(modalIsOpen);
   return (
     <>
       <Header />
       <FeedContainer>
-        <PageTitle>timeline</PageTitle>
-
+        <PageTitle>timeline</PageTitle>    
         <Post>
           <UserName> Juvenal Juvencio</UserName>
+          <TrashIcon src={trash} alt="lixeira" onClick={()=>openModal()}/>
           <PostText>
             Muito maneiro esse tutorial de Material UI com React, deem uma
             olhada!

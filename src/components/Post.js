@@ -8,7 +8,7 @@ const Post = styled.div`
   position: relative;
   padding: 19px 23px 20px 87px;
   margin-bottom: 16px;
-
+  
   @media (max-width: 620px) {
     width: 100%;
     height: 232px;
@@ -161,6 +161,12 @@ const PostWarning = styled.p`
   }
 `;
 
+const TrashIcon=styled.img`
+  position:absolute;
+  top:20px;
+  right:20px;
+`
+
 export {
   Post,
   UserImg,
@@ -173,4 +179,5 @@ export {
   LinkDetailsDescription,
   Link,
   PostWarning,
+  TrashIcon
 };
