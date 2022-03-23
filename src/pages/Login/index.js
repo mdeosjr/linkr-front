@@ -36,6 +36,7 @@ function Login() {
   }
 
   function loginSucess(response) {
+    localStorage.setItem("auth", JSON.stringify(response.data));
     setAuth(response.data);
     navigate("/timeline");
   }
