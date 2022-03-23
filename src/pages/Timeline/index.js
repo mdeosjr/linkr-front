@@ -1,28 +1,13 @@
-import { Container } from "./style";
-import {
-    SubmitButton, 
-    InputLink, 
-    InputText, 
-    FormInputs, 
-    TitleForm, 
-    PublishForm, 
-    UserProfile
-} from '../../components/PublishPost';
+import Container from "../../components/Container";
+import PublishPostForm from "./PublishPostForm";
 
 export default function Timeline() {
-  return (
-    <Container>
-      <PublishForm>
-        <UserProfile>
 
-        </UserProfile>
-        <FormInputs>
-          <TitleForm>What are you going to share today?</TitleForm>
-          <InputLink placeholder="http://..."></InputLink>
-          <InputText placeholder="Awesome article about #javascript"></InputText>
-          <SubmitButton>Publish</SubmitButton>
-        </FormInputs>
-      </PublishForm>
-    </Container>
+    
+    
+    return (
+        <Container>
+            <PublishPostForm></PublishPostForm>
+        </Container>
   );
 }

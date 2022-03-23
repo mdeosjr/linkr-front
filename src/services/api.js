@@ -1,14 +1,14 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "http://localhost:4000";
 
-// function createConfig(token) {
-//   return {
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   };
-// }
+ function createConfig(token) {
+   return {
+     headers: {
+       Authorization: `Bearer ${token}`,
+     },
+   };
+ }
 
 async function createUser(user) {
   return await axios.post(`${BASE_URL}/users`, user);
@@ -19,9 +19,14 @@ async function login(data) {
   return token;
 }
 
+async function publishPost(data, token) {
+  return axios.post(`${BASE_URL}/post`, data, createConfig(token));
+}
+
 const api = {
   createUser,
-  login
+  login,
+  publishPost
 };
 
 export default api;
