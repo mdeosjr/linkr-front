@@ -2,7 +2,7 @@ import Loader from "../../components/Loader.js";
 import { FeedContainer } from "../../components/FeedContainer";
 import { PageTitle } from "../../components/PageTitle";
 import {
-  Link,
+  LinkParagraph,
   LinkDetailsContainer,
   LinkDetailsDescription,
   LinkDetailsDescriptionContainer,
@@ -11,6 +11,7 @@ import {
   Post,
   PostText,
   PostWarning,
+  StyledLink,
   UserImg,
   UserName,
 } from "../../components/Post.js";
@@ -21,7 +22,8 @@ import useAuth from "../../hooks/useAuth";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [serverError, setServerError] = useState(false);
 
   const { auth } = useAuth();
 
@@ -29,11 +31,15 @@ export default function Timeline() {
     if (auth !== undefined) {
       const promise = api.getTimelinePosts(auth.token);
       promise.then((response) => {
+        setServerError(false);
+        setLoading(false);
         setPosts(response.data);
       });
 
       promise.catch((error) => {
         console.log(error);
+        setServerError(true);
+        setLoading(false);
       });
     }
   }, [posts]);
@@ -43,35 +49,38 @@ export default function Timeline() {
       <Header />
       <FeedContainer>
         <PageTitle>timeline</PageTitle>
-        {posts.length === 0 ? (
+        {loading ? <Loader /> : ""}
+        {posts.length === 0 && serverError === false && loading === false ? (
           <PostWarning>There are no posts yet</PostWarning>
         ) : (
           ""
         )}
-        {posts.map((post) => (
-          <Post key={post.id}>
-            <UserName>{post.userName}</UserName>
-            <PostText>{post.textPost}</PostText>
-            <UserImg src={post.userImage} />
-            <LinkDetailsContainer>
-              <LinkDetailsDescriptionContainer>
-                <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
-                <LinkDetailsDescription>
-                  {post.linkDescription}
-                </LinkDetailsDescription>
-                <Link>{post.link}</Link>
-              </LinkDetailsDescriptionContainer>
-              <LinkDetailsImg src={post.linkImage} />
-            </LinkDetailsContainer>
-          </Post>
-        ))}
-
-        <Loader />
-
-        <PostWarning>
-          An error occured while trying to fetch the posts, please refresh the
-          page
-        </PostWarning>
+        {serverError ? (
+          <PostWarning>
+            An error occured while trying to fetch the posts, please refresh the
+            page
+          </PostWarning>
+        ) : (
+          posts.map((post) => (
+            <Post key={post.id}>
+              <StyledLink href={post.link} target="_blank">
+                <UserName>{post.userName}</UserName>
+                <PostText>{post.textPost}</PostText>
+                <UserImg src={post.userImage} />
+                <LinkDetailsContainer>
+                  <LinkDetailsDescriptionContainer>
+                    <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
+                    <LinkDetailsDescription>
+                      {post.linkDescription}
+                    </LinkDetailsDescription>
+                    <LinkParagraph>{post.link}</LinkParagraph>
+                  </LinkDetailsDescriptionContainer>
+                  <LinkDetailsImg src={post.linkImage} />
+                </LinkDetailsContainer>
+              </StyledLink>
+            </Post>
+          ))
+        )}
       </FeedContainer>
     </>
   );
