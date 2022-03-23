@@ -21,7 +21,7 @@ async function login(data) {
 
 const api = {
   createUser,
-  login,
+  login
 };
 
 export default api;
