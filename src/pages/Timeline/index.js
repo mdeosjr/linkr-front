@@ -14,6 +14,7 @@ import {
   UserImg,
   UserName,
 } from "../../components/Post.js";
+import PublishPostForm from './PublishPostForm';
 import Header from "../../components/Header/index.js";
 
 export default function Timeline() {
@@ -22,7 +23,7 @@ export default function Timeline() {
       <Header />
       <FeedContainer>
         <PageTitle>timeline</PageTitle>
-
+        <PublishPostForm></PublishPostForm>
         <Post>
           <UserName> Juvenal Juvencio</UserName>
           <PostText>
@@ -53,6 +54,5 @@ export default function Timeline() {
         </PostWarning>
       </FeedContainer>
     </>
->>>>>>> main
   );
 }

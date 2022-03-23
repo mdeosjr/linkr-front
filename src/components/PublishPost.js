@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const PublishForm = styled.div`
     width: 100%;
-    max-width: 600px;
+    max-width: 611px;
     padding: 20px;
     background-color: #fff;
     border-radius: 16px;
@@ -12,7 +12,7 @@ const PublishForm = styled.div`
     gap: 20px;
     font-family: 'Lato', sans-serif;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    @media (max-width: 600px) {
+    @media (max-width: 620px) {
         border-radius: 0;
     }
 `;
