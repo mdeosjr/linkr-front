@@ -2,16 +2,16 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:5000";
 
-function createConfig(token) {
-  return {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-}
+// function createConfig(token) {
+//   return {
+//     headers: {
+//       Authorization: `Bearer ${token}`,
+//     },
+//   };
+// }
 
 async function createUser(user) {
-  await axios.post(`${BASE_URL}/users`, user);
+  return await axios.post(`${BASE_URL}/users`, user);
 }
 
 async function login(data) {
@@ -21,7 +21,7 @@ async function login(data) {
 
 const api = {
   createUser,
-  login,
+  login
 };
 
 export default api;
