@@ -19,6 +19,10 @@ async function login(data) {
   return token;
 }
 
+async function publishPost(data, token) {
+  return axios.post(`${BASE_URL}/post`, data, createConfig(token));
+}
+
 async function getTimelinePosts(token) {
   const config = createConfig(token);
   return axios.get(`${BASE_URL}/timeline`, config);
@@ -27,7 +31,8 @@ async function getTimelinePosts(token) {
 const api = {
   createUser,
   login,
-  getTimelinePosts,
+  publishPost,
+  getTimelinePosts
 };
 
 export default api;

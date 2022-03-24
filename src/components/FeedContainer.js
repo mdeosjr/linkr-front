@@ -8,6 +8,7 @@ const FeedContainer = styled.div`
   align-items: center;
   background-color: #333333;
   margin-top: 150px;
+  gap: 15px;
 
   @media (max-width: 620px) {
     width: 100%;

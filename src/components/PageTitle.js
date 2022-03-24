@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const PageTitle = styled.h1`
-  margin-bottom: 43px;
+  margin-bottom: 30px;
   color: var(--white);
   font-size: 43px;
   font-weight: bold;
