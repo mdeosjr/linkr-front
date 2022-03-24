@@ -20,11 +20,21 @@ import Header from "../../components/Header/index.js";
 import { useEffect, useState } from "react";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
+import { InputText } from "../../components/PublishPost.js";
+import FlexDiv from "../../components/FlexDiv.js";
+import editIcon from '../../assets/EditIcon.svg';
+import deleteIcon from '../../assets/DeleteIcon.svg';
+import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [serverError, setServerError] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [postId, setPostId] = useState('');
+  const [text, setText] = useState('');
+  const [disabled, setDisabled] = useState(false);
+  const [ativo, setAtivo] = useState(true);
 
   const { auth } = useAuth();
 
@@ -43,9 +53,38 @@ export default function Timeline() {
         setLoading(false);
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts]);
 
+  function changePost(id, postText) {
+    setEdit(!edit);
+    setPostId(id);
+    setText(postText)
+  }
+  function submitEditPost(newText) {
+    const promise = api.editPost(postId, auth.token, newText);
+    promise.then(() => {
+      setTimeout(() => {
+        setDisabled(false);
+        setEdit(false);
+        setAtivo(!ativo);
+        setPostId('');
+      }, 4000);
+    });
+    promise.catch(error => console.log(error))
+  }
+  function handlerKey(e) {
+    if (e.keyCode === 13) {
+      setDisabled(true);
+      setAtivo(!ativo);
+      submitEditPost(text);
+    }
+    if (e.keyCode === 27) {
+      setDisabled(false)
+      setEdit(false)
+      setPostId('')
+    }
+  }
   return (
     <>
       <Header />
@@ -66,11 +105,35 @@ export default function Timeline() {
         ) : (
           posts.map((post) => (
             <Post key={post.id}>
-              <StyledLink href={post.link} target="_blank">
+              <FlexDiv>
                 <UserName>{post.userName}</UserName>
-                <PostText>{post.textPost}</PostText>
-                <UserImg src={post.userImage} />
-                <LinkDetailsContainer>
+                {post.userId === auth.id
+                  ? <Agroup>
+                    <Edit
+                      src={editIcon}
+                      onClick={() => changePost(post.id, post.textPost)}
+                    />
+                    <Delete
+                      src={deleteIcon}
+                    />
+                  </Agroup>
+                  : ''
+                }
+              </FlexDiv>
+              {edit && postId === post.id
+                ? <InputText
+                  height={'50px'}
+                  ativo={ativo}
+                  disabled={disabled}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => handlerKey(e)}
+                />
+                : <PostText>{post.textPost}</PostText>
+              }
+              <UserImg src={post.userImage} />
+              <StyledLink href={post.link} target="_blank">
+                <LinkDetailsContainer href={post.link} target="_blank">
                   <LinkDetailsDescriptionContainer>
                     <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
                     <LinkDetailsDescription>

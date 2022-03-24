@@ -28,11 +28,17 @@ async function getTimelinePosts(token) {
   return axios.get(`${BASE_URL}/timeline`, config);
 }
 
+async function editPost(postId, token, text) {
+  const config = createConfig(token);
+  return axios.put(`${BASE_URL}/post/${postId}`, {text}, config);
+}
+
 const api = {
   createUser,
   login,
   publishPost,
-  getTimelinePosts
+  getTimelinePosts,
+  editPost
 };
 
 export default api;
