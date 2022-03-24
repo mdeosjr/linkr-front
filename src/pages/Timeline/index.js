@@ -40,9 +40,9 @@ export default function Timeline() {
   }
   function closeModal() {
     setModalIsOpen(true);
-}
+  }
 
-  
+
 
   useEffect(() => {
     if (auth !== undefined) {
@@ -59,7 +59,7 @@ export default function Timeline() {
         setLoading(false);
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts]);
 
   async function handleDelete(id) {
@@ -98,8 +98,28 @@ export default function Timeline() {
               <StyledLink href={post.link} target="_blank">
                 <UserName>{post.userName}</UserName>
                 <TrashIcon src={trash} alt="lixeira" onClick={() => openModal()} />
-                <ModalDelete modalIsOpen={modalIsOpen} handleDelete={handleDelete} id={post.id} closeModal={closeModal} /> 
-                     
+                {/* <ModalDelete modalIsOpen={modalIsOpen} handleDelete={handleDelete} id={post.id} closeModal={closeModal} />  */}
+                <Modal
+                  isOpen={modalIsOpen}
+                  onRequestClose={closeModal}
+                  style={customStyles}
+                  contentLabel="Example Modal"
+                >
+                  <ContainerModal>
+                    <h1>Are you sure you want <br /> to delete this post?</h1>
+
+                    <Form >
+                      <ButtonConfirm>
+                        no, go back
+                      </ButtonConfirm>
+                      <ButtonDelete
+                        onClick={() => handleDelete(post.id)}
+                      >
+                        yes,delete it
+                      </ButtonDelete>
+                    </Form>
+                  </ContainerModal>
+                </Modal>
                 <PostText>{post.textPost}</PostText>
                 <UserImg src={post.userImage} />
                 <LinkDetailsContainer>
