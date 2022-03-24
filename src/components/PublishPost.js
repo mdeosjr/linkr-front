@@ -58,7 +58,7 @@ const InputText = styled.textarea`
     width: 100%;
     background-color:  ${props => props.ativo ? '#EFEFEF' : '#DEDEDE'};
     color: ${props => props.ativo ? '#000' : '#949494'};
-    height: 60px;
+    height: ${props => props.height ? props.height : '60px'};
     resize: none;
     box-sizing: border-box;
     border: none;
@@ -67,6 +67,10 @@ const InputText = styled.textarea`
     font-size: 15px;
     font-family: 'Lato', sans-serif;
     ${props => !props.ativo && "pointer-events: none;"}
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    
     ::placeholder {
         text-align: start;
         font-weight: 100;
