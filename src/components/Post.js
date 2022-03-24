@@ -112,6 +112,8 @@ const LinkDetailsTitle = styled.p`
   line-height: 19px;
   color: #cecece;
   margin-bottom: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   @media (max-width: 620px) {
     font-size: 11px;
     line-height: 13px;
@@ -127,6 +129,8 @@ const LinkDetailsDescription = styled.p`
   line-height: 13px;
   margin-bottom: 13px;
   color: #9b9595;
+  overflow: hidden;
+  text-overflow: ellipsis;
   @media (max-width: 620px) {
     font-size: 9px;
     line-height: 11px;
@@ -134,13 +138,15 @@ const LinkDetailsDescription = styled.p`
   }
 `;
 
-const Link = styled.p`
+const LinkParagraph = styled.p`
   font-family: "Lato";
   font-style: normal;
   font-weight: 400;
   font-size: 11px;
   line-height: 13px;
   color: #cecece;
+  overflow: hidden;
+  text-overflow: ellipsis;
   @media (max-width: 620px) {
     font-size: 9px;
     line-height: 11px;
@@ -166,6 +172,17 @@ const TrashIcon=styled.img`
   top:20px;
   right:20px;
 `
+const StyledLink = styled.a`
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  line-height: 17px;
+  margin-top: 36px;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
 
 export {
   Post,
@@ -177,7 +194,8 @@ export {
   LinkDetailsImg,
   LinkDetailsTitle,
   LinkDetailsDescription,
-  Link,
+  LinkParagraph,
   PostWarning,
-  TrashIcon
+  TrashIcon,
+  StyledLink,
 };

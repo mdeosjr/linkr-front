@@ -24,10 +24,16 @@ async function getTimelinePosts(token) {
   return axios.get(`${BASE_URL}/timeline`, config);
 }
 
+async function deletePost(id,token){
+  const config = createConfig(token);
+  return axios.delete(`${BASE_URL}/post/${id}`,config);
+}
+
 const api = {
   createUser,
   login,
   getTimelinePosts,
+  deletePost
 };
 
 export default api;
