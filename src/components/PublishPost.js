@@ -4,6 +4,7 @@ const PublishForm = styled.div`
     width: 100%;
     max-width: 611px;
     padding: 20px;
+    margin-bottom: 15px;
     background-color: #fff;
     border-radius: 16px;
     display: grid;

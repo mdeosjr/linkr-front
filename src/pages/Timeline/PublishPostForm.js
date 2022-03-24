@@ -11,10 +11,8 @@ import {
 } from '../../components/PublishPost';
 import validator from 'validator';
 import AuthContext from '../../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
 
 export default function PublishPostForm() {
-    let navigate = useNavigate();
 
     const {auth} = useContext(AuthContext);
 
