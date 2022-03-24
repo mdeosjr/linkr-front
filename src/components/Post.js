@@ -7,12 +7,10 @@ const Post = styled.div`
   border-radius: 16px;
   position: relative;
   padding: 19px 23px 20px 87px;
-  margin-bottom: 16px;
 
   @media (max-width: 620px) {
     width: 100%;
     height: 232px;
-    margin: 16px 0;
     border-radius: 0px;
     padding: 10px 18px 15px 69px;
   }

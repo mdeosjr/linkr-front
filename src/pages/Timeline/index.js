@@ -15,6 +15,7 @@ import {
   UserImg,
   UserName,
 } from "../../components/Post.js";
+import PublishPostForm from './PublishPostForm';
 import Header from "../../components/Header/index.js";
 import { useEffect, useState } from "react";
 import api from "../../services/api.js";
@@ -42,6 +43,7 @@ export default function Timeline() {
         setLoading(false);
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts]);
 
   return (
@@ -49,6 +51,7 @@ export default function Timeline() {
       <Header />
       <FeedContainer>
         <PageTitle>timeline</PageTitle>
+        <PublishPostForm></PublishPostForm>
         {loading ? <Loader /> : ""}
         {posts.length === 0 && serverError === false && loading === false ? (
           <PostWarning>There are no posts yet</PostWarning>
