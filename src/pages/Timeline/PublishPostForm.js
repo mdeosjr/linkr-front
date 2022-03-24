@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import api from '../../services/api';
 import {
     SubmitButton,
@@ -11,7 +11,6 @@ import {
 } from '../../components/PublishPost';
 import validator from 'validator';
 import AuthContext from '../../contexts/AuthContext';
-import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export default function PublishPostForm() {
@@ -52,6 +51,7 @@ export default function PublishPostForm() {
 
       function submitFailure(error) {
         alert("Houve um erro no seu envio, tente novamente.");
+        console.log(error.response);
         setButton(true);
         setInput(true);
       }
