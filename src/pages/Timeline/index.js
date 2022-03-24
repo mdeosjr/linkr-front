@@ -34,6 +34,7 @@ export default function Timeline() {
   const [postId, setPostId] = useState('');
   const [text, setText] = useState('');
   const [disabled, setDisabled] = useState(false);
+  const [ativo, setAtivo] = useState(true);
 
   const { auth } = useAuth();
 
@@ -66,6 +67,7 @@ export default function Timeline() {
       setTimeout(() => {
         setDisabled(false);
         setEdit(false);
+        setAtivo(!ativo);
         setPostId('');
       }, 4000);
     });
@@ -74,6 +76,7 @@ export default function Timeline() {
   function handlerKey(e) {
     if (e.keyCode === 13) {
       setDisabled(true);
+      setAtivo(!ativo);
       submitEditPost(text);
     }
     if (e.keyCode === 27) {
@@ -120,13 +123,13 @@ export default function Timeline() {
               {edit && postId === post.id
                 ? <InputText
                   height={'50px'}
-                  ativo={!!edit}
+                  ativo={ativo}
                   disabled={disabled}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   onKeyDown={(e) => handlerKey(e)}
                 />
-                : <PostText>{post.id === postId ? text : post.textPost}</PostText>
+                : <PostText>{post.textPost}</PostText>
               }
               <UserImg src={post.userImage} />
               <StyledLink href={post.link} target="_blank">
