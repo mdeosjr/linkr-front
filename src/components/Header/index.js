@@ -10,8 +10,10 @@ import downArrow from "../../assets/DownArrow.svg";
 import upArrow from "../../assets/UpArrow.svg";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/useAuth.js";
 
 export default function Header() {
+  const { auth } = useAuth();
   const navigate = useNavigate();
   const [toggleLogout, setToggleLogout] = useState(false);
 
@@ -34,19 +36,15 @@ export default function Header() {
           ) : (
             <img src={downArrow} alt="DownArrow" onClick={HandleClick} />
           )}
-          <HeaderUserImage
-            src="https://images.unsplash.com/photo-1597223557154-721c1cecc4b0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTV8fGZhY2V8ZW58MHx8MHx8&auto=format&fit=crop&w=400&q=60"
-            alt="user"
-            onClick={HandleClick}
-          />
+          <HeaderUserImage src={auth.image} alt="user" onClick={HandleClick} />
           {toggleLogout ? (
-            ""
-          ) : (
             <HeaderLogout>
               <Link to="/" onClick={logoutUser}>
                 Logout
               </Link>
             </HeaderLogout>
+          ) : (
+            ""
           )}
         </HeaderUser>
       </HeaderContainer>
