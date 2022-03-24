@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const Form = styled.div`
     height: 100vh;
-    width: 535px;
+    width: 35vw;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -14,12 +14,43 @@ const Form = styled.div`
         display: flex;
         flex-direction: column;
         gap: 13px;
+        width: 85%;
+    }
+
+    @media (max-width: 600px) {
+        flex-direction: column;
+        width: 100%;
+        justify-content: flex-start;
+        padding-top: 40px;
+        gap: 20px;
+
+        form {
+            gap: 10px;
+        }
+
+        a {
+            font-size: 17px;
+            line-height: 20px;
+        }
+
+        input {
+            height: 55px;
+            &::placeholder {
+                font-size: 22px;
+                line-height: 33px;
+            }
+        }
+
+        button {
+            height: 55px;
+            font-size: 22px;
+        }
     }
 `;
 
 const Input = styled.input`
     all: unset;
-    width: 429px;
+    width: 100%;
     height: 65px;
     padding-left: 16px;
     box-sizing: border-box;
@@ -38,7 +69,7 @@ const Input = styled.input`
 
 const Button = styled.button`
     all: unset;
-    width: 429px;
+    width: 100%;
     height: 65px;
     display: flex;
     justify-content: center;
@@ -61,6 +92,7 @@ const StyledLink = styled(Link)`
     cursor: pointer;
     color: #FFFFFF;
     text-decoration: underline;
+    text-align: center;
 `;
 
 export {

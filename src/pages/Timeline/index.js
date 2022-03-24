@@ -16,6 +16,7 @@ import {
   UserName,
   TrashIcon
 } from "../../components/Post.js";
+import PublishPostForm from './PublishPostForm';
 import Header from "../../components/Header/index.js";
 import trash from "../../assets/lixeira.svg";
 import Modal from "react-modal";
@@ -58,6 +59,7 @@ export default function Timeline() {
         setLoading(false);
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts]);
 
   async function handleDelete(id) {
@@ -78,6 +80,7 @@ export default function Timeline() {
       <Header />
       <FeedContainer>
         <PageTitle>timeline</PageTitle>
+        <PublishPostForm></PublishPostForm>
         {loading ? <Loader /> : ""}
         {posts.length === 0 && serverError === false && loading === false ? (
           <PostWarning>There are no posts yet</PostWarning>
@@ -96,9 +99,7 @@ export default function Timeline() {
                 <UserName>{post.userName}</UserName>
                 <TrashIcon src={trash} alt="lixeira" onClick={() => openModal()} />
                 <ModalDelete modalIsOpen={modalIsOpen} handleDelete={handleDelete} id={post.id} closeModal={closeModal} /> 
-             
-
-                
+                     
                 <PostText>{post.textPost}</PostText>
                 <UserImg src={post.userImage} />
                 <LinkDetailsContainer>
