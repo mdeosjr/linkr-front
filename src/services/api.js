@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = "https://linkr-api-sql.herokuapp.com";
 
 function createConfig(token) {
   return {
