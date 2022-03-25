@@ -1,20 +1,6 @@
 import styled from 'styled-components';
 
-const ContainerModal=styled.div`
-    width: 597px;
-    height: 262px;
-    border-radius:50px;
-    background-color: #333333;
-    font-size:34px;
-    font-weight: bold;
-    color:#FFFFFF;
-    text-align: center;
-    display:flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    
-`
+
 const ButtonConfirm = styled.button`
     width: 134px;
     height: 37px;
@@ -48,7 +34,6 @@ const Form=styled.form`
     justify-content: space-between;
 `
 export{
-    ContainerModal,
     ButtonConfirm,
     ButtonDelete,
     Form   

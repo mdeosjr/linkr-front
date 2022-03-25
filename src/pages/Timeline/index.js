@@ -14,34 +14,48 @@ import {
   StyledLink,
   UserImg,
   UserName,
-  TrashIcon
 } from "../../components/Post.js";
 import PublishPostForm from './PublishPostForm';
 import Header from "../../components/Header/index.js";
-import trash from "../../assets/lixeira.svg";
 import Modal from "react-modal";
 import { useEffect, useState } from "react";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
-import { ModalDelete } from "../Modal/Modal.js";
-import { ButtonConfirm, ButtonDelete, ContainerModal, Form } from "../Modal/style.js";
+import { ButtonConfirm, ButtonDelete, Form } from "../../components/Modal/style.js";
+import { InputText } from "../../components/PublishPost.js";
+import FlexDiv from "../../components/FlexDiv.js";
+import editIcon from '../../assets/EditIcon.svg';
+import deleteIcon from '../../assets/DeleteIcon.svg';
+import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
+import SyncLoader from "react-spinners/PulseLoader";
+import { useNavigate } from "react-router-dom";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [serverError, setServerError] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [postId, setPostId] = useState('');
+  const [text, setText] = useState('');
+  const [disabled, setDisabled] = useState(false);
+  const [ativo, setAtivo] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { auth } = useAuth();
+  const navigate=useNavigate();
 
   Modal.setAppElement(document.querySelector('.root'));
   function openModal() {
     setModalIsOpen(true);
   }
+
   function closeModal() {
-    setModalIsOpen(true);
+    setModalIsOpen(!modalIsOpen);
   }
 
+
+  console.log("Modal" + modalIsOpen)
 
 
   useEffect(() => {
@@ -65,16 +79,49 @@ export default function Timeline() {
   async function handleDelete(id) {
     console.log(id);
     setModalIsOpen(false);
-    setLoading(false)
+    setIsLoading(true)
     try {
       await api.deletePost(id, auth.token);
-      setLoading(true);
+      setIsLoading(false);
 
     } catch (error) {
       alert('erro ao deletar o post');
     }
   }
 
+  function changePost(id, postText) {
+    setEdit(!edit);
+    setPostId(id);
+    setText(postText)
+  }
+  function submitEditPost(newText) {
+    const promise = api.editPost(postId, auth.token, newText);
+    promise.then(() => {
+      setTimeout(() => {
+        setDisabled(false);
+        setEdit(false);
+        setAtivo(!ativo);
+        setPostId('');
+      }, 4000);
+    });
+    promise.catch(error => console.log(error))
+  }
+  function handlerKey(e) {
+    if (e.keyCode === 13) {
+      setDisabled(true);
+      setAtivo(!ativo);
+      submitEditPost(text);
+    }
+    if (e.keyCode === 27) {
+      setDisabled(false)
+      setEdit(false)
+      setPostId('')
+    }
+  }
+  function handlePosts(){
+    setModalIsOpen(false);
+    navigate('/timeline');
+  }
   return (
     <>
       <Header />
@@ -95,34 +142,58 @@ export default function Timeline() {
         ) : (
           posts.map((post) => (
             <Post key={post.id}>
-              <StyledLink href={post.link} target="_blank">
+              <FlexDiv>
                 <UserName>{post.userName}</UserName>
-                <TrashIcon src={trash} alt="lixeira" onClick={() => openModal()} />
-                {/* <ModalDelete modalIsOpen={modalIsOpen} handleDelete={handleDelete} id={post.id} closeModal={closeModal} />  */}
                 <Modal
                   isOpen={modalIsOpen}
                   onRequestClose={closeModal}
                   style={customStyles}
-                  contentLabel="Example Modal"
                 >
-                  <ContainerModal>
-                    <h1>Are you sure you want <br /> to delete this post?</h1>
+                  <h1>Are you sure you want <br /> to delete this post?</h1>
 
-                    <Form >
-                      <ButtonConfirm>
-                        no, go back
-                      </ButtonConfirm>
-                      <ButtonDelete
-                        onClick={() => handleDelete(post.id)}
-                      >
-                        yes,delete it
-                      </ButtonDelete>
-                    </Form>
-                  </ContainerModal>
+                  <Form >
+                    <ButtonConfirm
+                    onClick={() => handlePosts()}
+                    >
+                      no, go back
+                    </ButtonConfirm>
+                    <ButtonDelete
+                      onClick={() => handleDelete(post.id)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? <SyncLoader color="white" size={5} /> : 'yes,delete it'}
+                    </ButtonDelete>
+                  </Form>
                 </Modal>
-                <PostText>{post.textPost}</PostText>
-                <UserImg src={post.userImage} />
-                <LinkDetailsContainer>
+
+                {post.userId === auth.id
+                  ? <Agroup>
+                    <Edit
+                      src={editIcon}
+                      onClick={() => changePost(post.id, post.textPost)}
+                    />
+                    <Delete
+                      src={deleteIcon}
+                      onClick={() => openModal()}
+                    />
+                  </Agroup>
+                  : ''
+                }
+              </FlexDiv>
+              {edit && postId === post.id
+                ? <InputText
+                  height={'50px'}
+                  ativo={ativo}
+                  disabled={disabled}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => handlerKey(e)}
+                />
+                : <PostText>{post.textPost}</PostText>
+              }
+              <UserImg src={post.userImage} />
+              <StyledLink href={post.link} target="_blank">
+                <LinkDetailsContainer href={post.link} target="_blank">
                   <LinkDetailsDescriptionContainer>
                     <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
                     <LinkDetailsDescription>
@@ -143,14 +214,24 @@ export default function Timeline() {
 
 const customStyles = {
   content: {
+    width: '597px',
+    height: '262px',
+    fontSize: '34px',
     top: '50%',
     left: '50%',
     right: 'auto',
     bottom: 'auto',
+    backgroundColor: '#333333',
+    borderRadius: '50px',
     marginRight: '-50%',
-    background: 'none',
-    boder: 'none',
     transform: 'translate(-50%, -50%)',
+    color: '#FFFFFF',
+    textAlign: ' center',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
   },
 };
+
 
