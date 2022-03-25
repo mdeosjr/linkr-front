@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "https://linkr-api-sql.herokuapp.com";
+/* const BASE_URL = "https://linkr-api-sql.herokuapp.com"; */
+const BASE_URL = "http://localhost:5000";
 
 function createConfig(token) {
   return {
@@ -41,6 +42,10 @@ async function editPost(postId, token, text) {
   return axios.put(`${BASE_URL}/post/${postId}`, {text}, config);
 }
 
+async function searchUsersByName(name) {
+  return axios.get(`${BASE_URL}/users/search?name=${name}`);
+}
+
 const api = {
   createUser,
   login,
@@ -48,7 +53,8 @@ const api = {
   deletePost,
   publishPost,
   getUserPosts,
-  editPost
+  editPost,
+  searchUsersByName,
 };
 
 export default api;
