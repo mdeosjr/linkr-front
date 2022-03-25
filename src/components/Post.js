@@ -7,6 +7,8 @@ const Post = styled.div`
   border-radius: 16px;
   position: relative;
   padding: 19px 23px 20px 87px;
+  margin-bottom: 16px;
+  
 
   @media (max-width: 620px) {
     width: 100%;
@@ -48,13 +50,21 @@ const UserImg = styled.img`
 `;
 
 const PostText = styled.p`
-  height: 52px;
+  height: 40px;
+  margin-bottom: 10px;
   font-family: "Lato";
   font-style: normal;
   font-weight: 400;
   font-size: 17px;
   line-height: 20px;
   color: #b7b7b7;
+  /* white-space: wrap;
+  text-overflow: ellipsis; */
+  max-width: 100ch;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 
   @media (max-width: 620px) {
     font-size: 15px;
@@ -165,6 +175,11 @@ const PostWarning = styled.p`
   }
 `;
 
+const TrashIcon=styled.img`
+  position:absolute;
+  top:20px;
+  right:20px;
+`
 const StyledLink = styled.a`
   color: var(--white);
   font-size: 15px;
@@ -189,5 +204,6 @@ export {
   LinkDetailsDescription,
   LinkParagraph,
   PostWarning,
+  TrashIcon,
   StyledLink,
 };
