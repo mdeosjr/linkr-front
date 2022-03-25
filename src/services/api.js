@@ -28,6 +28,10 @@ async function getTimelinePosts(token) {
   return axios.get(`${BASE_URL}/timeline`, config);
 }
 
+async function deletePost(id,token){
+  const config = createConfig(token);
+  return axios.delete(`${BASE_URL}/post/${id}`,config);
+}
 async function editPost(postId, token, text) {
   const config = createConfig(token);
   return axios.put(`${BASE_URL}/post/${postId}`, {text}, config);
@@ -36,8 +40,9 @@ async function editPost(postId, token, text) {
 const api = {
   createUser,
   login,
-  publishPost,
   getTimelinePosts,
+  deletePost,
+  publishPost,
   editPost
 };
 
