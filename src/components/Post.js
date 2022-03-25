@@ -8,7 +8,6 @@ const Post = styled.div`
   position: relative;
   padding: 19px 23px 20px 87px;
   margin-bottom: 16px;
-  
 
   @media (max-width: 620px) {
     width: 100%;
@@ -69,6 +68,13 @@ const PostText = styled.p`
   @media (max-width: 620px) {
     font-size: 15px;
     line-height: 18px;
+  }
+
+  span,
+  a {
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
   }
 `;
 
@@ -175,11 +181,11 @@ const PostWarning = styled.p`
   }
 `;
 
-const TrashIcon=styled.img`
-  position:absolute;
-  top:20px;
-  right:20px;
-`
+const TrashIcon = styled.img`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+`;
 const StyledLink = styled.a`
   color: var(--white);
   font-size: 15px;
