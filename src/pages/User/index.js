@@ -1,6 +1,7 @@
 import Loader from "../../components/Loader.js";
 import { FeedContainer } from "../../components/FeedContainer";
 import { PageTitle } from "../../components/PageTitle";
+import { UserImage, UserHeader } from "../../components/User";
 import {
   LinkParagraph,
   LinkDetailsContainer,
@@ -14,27 +15,27 @@ import {
   UserImg,
   UserName,
 } from "../../components/Post.js";
-import PublishPostForm from './PublishPostForm';
 import Header from "../../components/Header/index.js";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
+import { useParams } from "react-router-dom";
 
-export default function Timeline() {
+export default function UserPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [serverError, setServerError] = useState(false);
-  const navigate = useNavigate();
+  const { id } = useParams();  
   const { auth } = useAuth();
 
   useEffect(() => {
     if (auth !== undefined) {
-      const promise = api.getTimelinePosts(auth.token);
+      const promise = api.getUserPosts(auth.token, id);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts(response.data);
+        setPosts(response.data.posts);
+        console.log(response.data);
       });
 
       promise.catch((error) => {
@@ -44,14 +45,16 @@ export default function Timeline() {
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [posts]);
+  }, []);
 
   return (
     <>
       <Header />
       <FeedContainer>
-        <PageTitle>timeline</PageTitle>
-        <PublishPostForm></PublishPostForm>
+        <UserHeader>
+            <UserImage src={auth.image}/>
+            <PageTitle>{`${auth.name}'s posts`}</PageTitle>
+        </UserHeader>
         {loading ? <Loader /> : ""}
         {posts.length === 0 && serverError === false && loading === false ? (
           <PostWarning>There are no posts yet</PostWarning>
@@ -64,11 +67,11 @@ export default function Timeline() {
             page
           </PostWarning>
         ) : (
-          posts.map((post) => (
+          posts.reverse().map((post) => (
             <Post key={post.id}>
-                <UserName onClick={() => navigate(`/user/${post.userId}`)}>{post.userName}</UserName>
-                <PostText>{post.textPost}</PostText>
-                <UserImg src={post.userImage} />
+                <UserName>{auth.name}</UserName>
+                <PostText>{post.text}</PostText>
+                <UserImg src={auth.image} />
                 <LinkDetailsContainer>
                   <LinkDetailsDescriptionContainer>
                     <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
