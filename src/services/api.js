@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:4000";
+const BASE_URL = "https://linkr-api-sql.herokuapp.com";
 
 function createConfig(token) {
   return {
@@ -28,6 +28,10 @@ async function getTimelinePosts(token) {
   return axios.get(`${BASE_URL}/timeline`, config);
 }
 
+async function getUserPosts(token, userId) {
+  const config = createConfig(token);
+  return axios.get(`${BASE_URL}/user/${userId}`, config);
+}
 async function deletePost(id,token){
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/post/${id}`,config);
@@ -43,6 +47,8 @@ const api = {
   getTimelinePosts,
   deletePost,
   publishPost,
+  getTimelinePosts,
+  getUserPosts,
   editPost
 };
 

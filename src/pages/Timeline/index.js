@@ -11,7 +11,6 @@ import {
   Post,
   PostText,
   PostWarning,
-  StyledLink,
   UserImg,
   UserName,
 } from "../../components/Post.js";
@@ -19,6 +18,7 @@ import PublishPostForm from './PublishPostForm';
 import Header from "../../components/Header/index.js";
 import Modal from "react-modal";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
 import { ButtonConfirm, ButtonDelete, Form } from "../../components/Modal/style.js";
@@ -143,7 +143,7 @@ export default function Timeline() {
           posts.map((post) => (
             <Post key={post.id}>
               <FlexDiv>
-                <UserName>{post.userName}</UserName>
+                <UserName onClick={() => navigate(`/user/${post.userId}`)}>{post.userName}</UserName>
                 <Modal
                   isOpen={modalIsOpen}
                   onRequestClose={closeModal}
@@ -203,7 +203,6 @@ export default function Timeline() {
                   </LinkDetailsDescriptionContainer>
                   <LinkDetailsImg src={post.linkImage} />
                 </LinkDetailsContainer>
-              </StyledLink>
             </Post>
           ))
         )}
