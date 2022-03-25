@@ -11,6 +11,7 @@ import {
   Post,
   PostText,
   PostWarning,
+  StyledLink,
   UserImg,
   UserName,
 } from "../../components/Post.js";
@@ -28,7 +29,6 @@ import editIcon from '../../assets/EditIcon.svg';
 import deleteIcon from '../../assets/DeleteIcon.svg';
 import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
 import SyncLoader from "react-spinners/PulseLoader";
-import { useNavigate } from "react-router-dom";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -203,6 +203,7 @@ export default function Timeline() {
                   </LinkDetailsDescriptionContainer>
                   <LinkDetailsImg src={post.linkImage} />
                 </LinkDetailsContainer>
+                </StyledLink>
             </Post>
           ))
         )}
