@@ -47,7 +47,6 @@ const api = {
   getTimelinePosts,
   deletePost,
   publishPost,
-  getTimelinePosts,
   getUserPosts,
   editPost
 };

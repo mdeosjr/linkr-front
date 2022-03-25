@@ -11,6 +11,7 @@ import {
   Post,
   PostText,
   PostWarning,
+  StyledLink,
   UserImg,
   UserName,
 } from "../../components/Post.js";
@@ -28,7 +29,6 @@ import editIcon from '../../assets/EditIcon.svg';
 import deleteIcon from '../../assets/DeleteIcon.svg';
 import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
 import SyncLoader from "react-spinners/PulseLoader";
-import { useNavigate } from "react-router-dom";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -53,10 +53,6 @@ export default function Timeline() {
   function closeModal() {
     setModalIsOpen(!modalIsOpen);
   }
-
-
-  console.log("Modal" + modalIsOpen)
-
 
   useEffect(() => {
     if (auth !== undefined) {
@@ -100,7 +96,7 @@ export default function Timeline() {
       setTimeout(() => {
         setDisabled(false);
         setEdit(false);
-        setAtivo(!ativo);
+        setAtivo(true);
         setPostId('');
       }, 4000);
     });
@@ -114,6 +110,7 @@ export default function Timeline() {
     }
     if (e.keyCode === 27) {
       setDisabled(false)
+      setAtivo(!ativo);
       setEdit(false)
       setPostId('')
     }
@@ -182,6 +179,8 @@ export default function Timeline() {
               </FlexDiv>
               {edit && postId === post.id
                 ? <InputText
+                  autoFocus
+                  onFocus={e => e.currentTarget.select()}
                   height={'50px'}
                   ativo={ativo}
                   disabled={disabled}
@@ -203,6 +202,7 @@ export default function Timeline() {
                   </LinkDetailsDescriptionContainer>
                   <LinkDetailsImg src={post.linkImage} />
                 </LinkDetailsContainer>
+                </StyledLink>
             </Post>
           ))
         )}
