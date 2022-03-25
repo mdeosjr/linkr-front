@@ -54,10 +54,6 @@ export default function Timeline() {
     setModalIsOpen(!modalIsOpen);
   }
 
-
-  console.log("Modal" + modalIsOpen)
-
-
   useEffect(() => {
     if (auth !== undefined) {
       const promise = api.getTimelinePosts(auth.token);
@@ -100,7 +96,7 @@ export default function Timeline() {
       setTimeout(() => {
         setDisabled(false);
         setEdit(false);
-        setAtivo(!ativo);
+        setAtivo(true);
         setPostId('');
       }, 4000);
     });
@@ -114,6 +110,7 @@ export default function Timeline() {
     }
     if (e.keyCode === 27) {
       setDisabled(false)
+      setAtivo(!ativo);
       setEdit(false)
       setPostId('')
     }
@@ -182,6 +179,8 @@ export default function Timeline() {
               </FlexDiv>
               {edit && postId === post.id
                 ? <InputText
+                  autoFocus
+                  onFocus={e => e.currentTarget.select()}
                   height={'50px'}
                   ativo={ativo}
                   disabled={disabled}
