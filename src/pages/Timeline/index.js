@@ -33,6 +33,7 @@ import editIcon from "../../assets/EditIcon.svg";
 import deleteIcon from "../../assets/DeleteIcon.svg";
 import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
 import SyncLoader from "react-spinners/PulseLoader";
+import SearchBarTimeline from "../../components/SearchBarTimeline/index.js";
 import ReactHashtag from "react-hashtag";
 
 export default function Timeline() {
@@ -128,6 +129,7 @@ export default function Timeline() {
     <>
       <Header />
       <FeedContainer>
+        <SearchBarTimeline></SearchBarTimeline>
         <PageTitle>timeline</PageTitle>
         <PublishPostForm></PublishPostForm>
         {loading ? <Loader /> : ""}
