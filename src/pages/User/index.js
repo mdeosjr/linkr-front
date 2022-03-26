@@ -27,7 +27,6 @@ export default function UserPage() {
   const [serverError, setServerError] = useState(false);
   const { id } = useParams();  
   const { auth } = useAuth();
-  console.log(posts)
 
   useEffect(() => {
     if (auth !== undefined) {
@@ -53,8 +52,8 @@ export default function UserPage() {
       <FeedContainer>
         {loading ? <Loader /> : 
           <UserHeader>
-            <UserImage src={posts[0].image}/>
-            <PageTitle>{`${posts[0].name}'s posts`}</PageTitle>
+            <UserImage src={posts[0]?.image}/>
+            <PageTitle>{`${posts[0]?.name}'s posts`}</PageTitle>
           </UserHeader>
         }
         {posts.length === 0 && serverError === false && loading === false ? (
