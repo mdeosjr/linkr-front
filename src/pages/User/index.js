@@ -27,6 +27,7 @@ export default function UserPage() {
   const [serverError, setServerError] = useState(false);
   const { id } = useParams();  
   const { auth } = useAuth();
+  console.log(posts)
 
   useEffect(() => {
     if (auth !== undefined) {
@@ -34,8 +35,7 @@ export default function UserPage() {
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts(response.data.posts);
-        console.log(response.data);
+        setPosts(response.data);
       });
 
       promise.catch((error) => {
@@ -51,10 +51,10 @@ export default function UserPage() {
     <>
       <Header />
       <FeedContainer>
-        <UserHeader>
-            <UserImage src={auth.image}/>
-            <PageTitle>{`${auth.name}'s posts`}</PageTitle>
-        </UserHeader>
+        {/* <UserHeader>
+            <UserImage src={posts[0].image}/>
+            <PageTitle>{`${posts[0].name}'s posts`}</PageTitle>
+        </UserHeader> */}
         {loading ? <Loader /> : ""}
         {posts.length === 0 && serverError === false && loading === false ? (
           <PostWarning>There are no posts yet</PostWarning>
@@ -69,9 +69,9 @@ export default function UserPage() {
         ) : (
           posts.reverse().map((post) => (
             <Post key={post.id}>
-                <UserName>{auth.name}</UserName>
+                <UserName>{post.name}</UserName>
                 <PostText>{post.text}</PostText>
-                <UserImg src={auth.image} />
+                <UserImg src={post.image} />
                 <LinkDetailsContainer>
                   <LinkDetailsDescriptionContainer>
                     <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
