@@ -51,11 +51,12 @@ export default function UserPage() {
     <>
       <Header />
       <FeedContainer>
-        {/* <UserHeader>
+        {loading ? <Loader /> : 
+          <UserHeader>
             <UserImage src={posts[0].image}/>
             <PageTitle>{`${posts[0].name}'s posts`}</PageTitle>
-        </UserHeader> */}
-        {loading ? <Loader /> : ""}
+          </UserHeader>
+        }
         {posts.length === 0 && serverError === false && loading === false ? (
           <PostWarning>There are no posts yet</PostWarning>
         ) : (
