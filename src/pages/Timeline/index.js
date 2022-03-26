@@ -15,20 +15,26 @@ import {
   UserImg,
   UserName,
 } from "../../components/Post.js";
-import PublishPostForm from './PublishPostForm';
+import PublishPostForm from "./PublishPostForm";
 import Header from "../../components/Header/index.js";
 import Modal from "react-modal";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
-import { ButtonConfirm, ButtonDelete, Form } from "../../components/Modal/style.js";
+import {
+  ButtonConfirm,
+  ButtonDelete,
+  Form,
+} from "../../components/Modal/style.js";
 import { InputText } from "../../components/PublishPost.js";
 import FlexDiv from "../../components/FlexDiv.js";
-import editIcon from '../../assets/EditIcon.svg';
-import deleteIcon from '../../assets/DeleteIcon.svg';
+import editIcon from "../../assets/EditIcon.svg";
+import deleteIcon from "../../assets/DeleteIcon.svg";
 import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
 import SyncLoader from "react-spinners/PulseLoader";
+import SearchBarTimeline from "../../components/SearchBarTimeline/index.js";
+import ReactHashtag from "react-hashtag";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -36,16 +42,16 @@ export default function Timeline() {
   const [serverError, setServerError] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [edit, setEdit] = useState(false);
-  const [postId, setPostId] = useState('');
-  const [text, setText] = useState('');
+  const [postId, setPostId] = useState("");
+  const [text, setText] = useState("");
   const [disabled, setDisabled] = useState(false);
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   const { auth } = useAuth();
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
-  Modal.setAppElement(document.querySelector('.root'));
+  Modal.setAppElement(document.querySelector(".root"));
   function openModal() {
     setModalIsOpen(true);
   }
@@ -75,20 +81,19 @@ export default function Timeline() {
   async function handleDelete(id) {
     console.log(id);
     setModalIsOpen(false);
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       await api.deletePost(id, auth.token);
       setIsLoading(false);
-
     } catch (error) {
-      alert('erro ao deletar o post');
+      alert("erro ao deletar o post");
     }
   }
 
   function changePost(id, postText) {
     setEdit(!edit);
     setPostId(id);
-    setText(postText)
+    setText(postText);
   }
   function submitEditPost(newText) {
     const promise = api.editPost(postId, auth.token, newText);
@@ -97,10 +102,10 @@ export default function Timeline() {
         setDisabled(false);
         setEdit(false);
         setAtivo(true);
-        setPostId('');
+        setPostId("");
       }, 4000);
     });
-    promise.catch(error => console.log(error))
+    promise.catch((error) => console.log(error));
   }
   function handlerKey(e) {
     if (e.keyCode === 13) {
@@ -109,20 +114,22 @@ export default function Timeline() {
       submitEditPost(text);
     }
     if (e.keyCode === 27) {
-      setDisabled(false)
+      setDisabled(false);
       setAtivo(!ativo);
-      setEdit(false)
-      setPostId('')
+      setEdit(false);
+      setPostId("");
     }
   }
-  function handlePosts(){
+  function handlePosts() {
     setModalIsOpen(false);
-    navigate('/timeline');
+    navigate("/timeline");
   }
+  
   return (
     <>
       <Header />
       <FeedContainer>
+        <SearchBarTimeline></SearchBarTimeline>
         <PageTitle>timeline</PageTitle>
         <PublishPostForm></PublishPostForm>
         {loading ? <Loader /> : ""}
@@ -140,56 +147,69 @@ export default function Timeline() {
           posts.map((post) => (
             <Post key={post.id}>
               <FlexDiv>
-                <UserName onClick={() => navigate(`/user/${post.userId}`)}>{post.userName}</UserName>
+                <UserName onClick={() => navigate(`/user/${post.userId}`)}>
+                  {post.userName}
+                </UserName>
                 <Modal
                   isOpen={modalIsOpen}
                   onRequestClose={closeModal}
                   style={customStyles}
                 >
-                  <h1>Are you sure you want <br /> to delete this post?</h1>
+                  <h1>
+                    Are you sure you want <br /> to delete this post?
+                  </h1>
 
-                  <Form >
-                    <ButtonConfirm
-                    onClick={() => handlePosts()}
-                    >
+                  <Form>
+                    <ButtonConfirm onClick={() => handlePosts()}>
                       no, go back
                     </ButtonConfirm>
                     <ButtonDelete
                       onClick={() => handleDelete(post.id)}
                       disabled={isLoading}
                     >
-                      {isLoading ? <SyncLoader color="white" size={5} /> : 'yes,delete it'}
+                      {isLoading ? (
+                        <SyncLoader color="white" size={5} />
+                      ) : (
+                        "yes,delete it"
+                      )}
                     </ButtonDelete>
                   </Form>
                 </Modal>
 
-                {post.userId === auth.id
-                  ? <Agroup>
+                {post.userId === auth.id ? (
+                  <Agroup>
                     <Edit
                       src={editIcon}
                       onClick={() => changePost(post.id, post.textPost)}
                     />
-                    <Delete
-                      src={deleteIcon}
-                      onClick={() => openModal()}
-                    />
+                    <Delete src={deleteIcon} onClick={() => openModal()} />
                   </Agroup>
-                  : ''
-                }
+                ) : (
+                  ""
+                )}
               </FlexDiv>
-              {edit && postId === post.id
-                ? <InputText
+              {edit && postId === post.id ? (
+                <InputText
                   autoFocus
-                  onFocus={e => e.currentTarget.select()}
-                  height={'50px'}
+                  onFocus={(e) => e.currentTarget.select()}
+                  height={"50px"}
                   ativo={ativo}
                   disabled={disabled}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   onKeyDown={(e) => handlerKey(e)}
                 />
-                : <PostText>{post.textPost}</PostText>
-              }
+              ) : (
+                <PostText>
+                  <ReactHashtag
+                    onHashtagClick={(val) =>
+                      navigate(`/hashtag/${val.substring(1).toLowerCase()}`)
+                    }
+                  >
+                    {post.textPost}
+                  </ReactHashtag>
+                </PostText>
+              )}
               <UserImg src={post.userImage} />
               <StyledLink href={post.link} target="_blank">
                 <LinkDetailsContainer href={post.link} target="_blank">
@@ -202,7 +222,7 @@ export default function Timeline() {
                   </LinkDetailsDescriptionContainer>
                   <LinkDetailsImg src={post.linkImage} />
                 </LinkDetailsContainer>
-                </StyledLink>
+              </StyledLink>
             </Post>
           ))
         )}
@@ -213,24 +233,22 @@ export default function Timeline() {
 
 const customStyles = {
   content: {
-    width: '597px',
-    height: '262px',
-    fontSize: '34px',
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    backgroundColor: '#333333',
-    borderRadius: '50px',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    color: '#FFFFFF',
-    textAlign: ' center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
+    width: "597px",
+    height: "262px",
+    fontSize: "34px",
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    backgroundColor: "#333333",
+    borderRadius: "50px",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    color: "#FFFFFF",
+    textAlign: " center",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexWrap: "wrap",
   },
 };
-
-

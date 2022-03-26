@@ -11,6 +11,7 @@ import upArrow from "../../assets/UpArrow.svg";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth.js";
+import SearchBar from "../SearchBar";
 
 export default function Header() {
   const { auth } = useAuth();
@@ -30,6 +31,7 @@ export default function Header() {
     <>
       <HeaderContainer>
         <HeaderLogo>linkr</HeaderLogo>
+        <SearchBar></SearchBar>
         <HeaderUser>
           {toggleLogout ? (
             <img src={downArrow} alt="UpArrow" onClick={HandleClick} />
