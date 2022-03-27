@@ -30,7 +30,13 @@ export default function Header() {
   return (
     <>
       <HeaderContainer>
-        <HeaderLogo>linkr</HeaderLogo>
+        <HeaderLogo
+          onClick={() => {
+            navigate("/timeline");
+          }}
+        >
+          linkr
+        </HeaderLogo>
         <SearchBar></SearchBar>
         <HeaderUser>
           {toggleLogout ? (
