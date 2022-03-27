@@ -35,6 +35,9 @@ import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
 import SyncLoader from "react-spinners/PulseLoader";
 import SearchBarTimeline from "../../components/SearchBarTimeline/index.js";
 import ReactHashtag from "react-hashtag";
+import { Icon, Likes, QntLikes } from "../../components/Likes.js";
+import HeartFilled from '../../assets/HeartFilled.svg';
+import HeartOutlined from '../../assets/HeartOutlined.svg';
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
