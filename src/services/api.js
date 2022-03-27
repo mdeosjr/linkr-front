@@ -1,7 +1,12 @@
 import axios from "axios";
 
+<<<<<<< HEAD
 const BASE_URL = "https://linkr-api-sql.herokuapp.com";
 /* const BASE_URL = "http://localhost:5000"; */
+=======
+const BASE_URL = "https://linkr-api-sql.herokuapp.com"; 
+// const BASE_URL = "http://localhost:5000";
+>>>>>>> main
 
 function createConfig(token) {
   return {
