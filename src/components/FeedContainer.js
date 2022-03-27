@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
 const FeedContainer = styled.div`
-  width: 611px;
   min-height: 100vh;
   flex-direction: column;
   display: flex;
