@@ -58,7 +58,7 @@ export default function Timeline() {
   const { hashtag } = useParams();
 
 
-  const { auth } = useAuth();
+  const { auth, attPage, setAttPage } = useAuth();
   const navigate = useNavigate();
 
 
@@ -72,13 +72,12 @@ export default function Timeline() {
   }
 
   useEffect(() => {
-    if (auth !== undefined && hashtag === undefined) {
+    if (auth && !hashtag) {
       const promise = api.getTimelinePosts(auth.token);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts(response.data);
-        console.log("posts", posts);
+        setPosts([...response.data]);
       });
 
       promise.catch((error) => {
@@ -86,13 +85,13 @@ export default function Timeline() {
         setServerError(true);
         setLoading(false);
       });
-    } else if (auth !== undefined && hashtag !== undefined) {
+    } else if (auth && hashtag) {
+      
       const promise = api.getPostByHashtag(auth.token, hashtag);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts([]);
-        setPosts(response.data);
+        setPosts([...response.data]);
       })
       promise.catch((error) => {
         console.log(error);
@@ -101,17 +100,17 @@ export default function Timeline() {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [posts]);
-
+  }, [attPage, hashtag]);
   async function handleDelete(id) {
-    console.log("id" + id);
     setModalIsOpen(false);
     setIsLoading(true);
     try {
       await api.deletePost(id, auth.token);
       setIsLoading(false);
+      setAttPage(!attPage);
     } catch (error) {
-      alert("erro ao deletar o post");
+      alert("Erro ao deletar o post, tente novamente.");
+      setIsLoading(false);
     }
   }
 
@@ -123,12 +122,11 @@ export default function Timeline() {
   function submitEditPost(newText) {
     const promise = api.editPost(postId, auth.token, newText);
     promise.then(() => {
-      setTimeout(() => {
-        setDisabled(false);
-        setEdit(false);
-        setAtivo(true);
-        setPostId("");
-      }, 4000);
+      setDisabled(false);
+      setEdit(false);
+      setAtivo(true);
+      setPostId("");
+      setAttPage(!attPage);
     });
     promise.catch((error) => console.log(error));
   }
@@ -155,6 +153,7 @@ export default function Timeline() {
       liked
         ? await api.deleteLike(auth.token, postIdLiked)
         : await api.postLike(auth.token, postIdLiked)
+      setAttPage(!attPage);
     } catch (error) {
       alert("Ocorreu um erro. Tente novamente.")
     }
@@ -169,7 +168,7 @@ export default function Timeline() {
         <PageTitle>{hashtag === undefined ? 'timeline' : "#" + hashtag}</PageTitle>
         <MainContainer>
           <PostsContainer>
-            {hashtag === undefined ? <PublishPostForm /> : ''}
+            {hashtag === undefined ? <PublishPostForm attPage={attPage} setAttPage={setAttPage} /> : ''}
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
               serverError === false &&
@@ -186,7 +185,7 @@ export default function Timeline() {
             ) : (
 
               posts.map((post) => (
-                <Post key={post.id}>
+                <Post active={true} key={post.id}>
                   <FlexDiv>
                     <UserName onClick={() => navigate(`/user/${post.userId}`)}>
                       {post.userName}
@@ -211,7 +210,7 @@ export default function Timeline() {
                           {isLoading ? (
                             <SyncLoader color="white" size={5} />
                           ) : (
-                            "yes,delete it"
+                            "yes, delete it"
                           )}
                         </ButtonDelete>
                       </Form>
@@ -282,7 +281,7 @@ export default function Timeline() {
               )
             )}
           </PostsContainer>
-          <HashtagsSidebar hashtagPost={hashtag} />
+          <HashtagsSidebar attPage={attPage} setAttPage={setAttPage} setPosts={setPosts} hashtagPost={hashtag} />
         </MainContainer>
       </FeedContainer>
     </>

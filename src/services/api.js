@@ -83,7 +83,8 @@ const api = {
   getLikesByPostId,
   postLike,
   deleteLike,
-  getPostByHashtag
+  getPostByHashtag,
+  BASE_URL
 };
 
 export default api;

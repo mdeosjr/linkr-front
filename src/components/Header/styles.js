@@ -14,12 +14,13 @@ const HeaderContainer = styled.div`
   z-index: 100;
 `;
 
-const HeaderLogo = styled.p`
+const HeaderLogo = styled.a`
   font-family: "Passion One";
   font-style: normal;
   font-weight: 700;
   font-size: 49px;
   line-height: 54px;
+  cursor: pointer;
 
   letter-spacing: 0.05em;
 

@@ -2,10 +2,10 @@ import { HashtagLink, SidebarContainer, SidebarTitle } from "./styles";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 
-export default function HashtagsSidebar({ hashtagPost }) {
+export default function HashtagsSidebar({attPage, setAttPage }) {
 
   const [hashtags, setHashtags] = useState([]);
   const { auth } = useAuth();
@@ -22,20 +22,21 @@ export default function HashtagsSidebar({ hashtagPost }) {
         console.log(error);
       });
     }
-  });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attPage]);
   
 
   return (
     <>
       <SidebarContainer>
-        <SidebarTitle>timeline</SidebarTitle>
+        <SidebarTitle>trending</SidebarTitle>
         {hashtags.length === 0
           ? ""
           : hashtags.map((hashtag) => (
             <HashtagLink
               key={hashtag.hashtagId}
-              onClick={() => {               
-                navigate(`/hashtag/${hashtag.hashtagText}`);                
+              onClick={() => {
+                navigate(`/hashtag/${hashtag.hashtagText}`);
               }}
             >
               # {hashtag.hashtagText}
