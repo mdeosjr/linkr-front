@@ -13,6 +13,7 @@
     "react-router-dom": "^6.2.2",
     "react-scripts": "^4.0.3",
     "react-spinners": "^0.11.0",
+    "react-tooltip": "^4.2.21",
     "styled-components": "^5.3.3",
     "validator": "^13.7.0"
   },
