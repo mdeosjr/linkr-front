@@ -19,7 +19,7 @@ import PublishPostForm from "./PublishPostForm";
 import Header from "../../components/Header/index.js";
 import Modal from "react-modal";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
 import {
@@ -35,10 +35,12 @@ import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
 import SyncLoader from "react-spinners/PulseLoader";
 import SearchBarTimeline from "../../components/SearchBarTimeline/index.js";
 import ReactHashtag from "react-hashtag";
+import { Icon, Likes, QntLikes } from "../../components/Likes.js";
+import HeartFilled from '../../assets/HeartFilled.svg';
+import HeartOutlined from '../../assets/HeartOutlined.svg';
 import HashtagsSidebar from "../../components/HashtagsSidebar/index.js";
 import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
-import { useParams } from 'react-router-dom';
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -52,7 +54,7 @@ export default function Timeline() {
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [postByHashtag, setPostByHashtag] = useState([]);
-  
+
   const { hashtag } = useParams();
 
 
@@ -99,7 +101,7 @@ export default function Timeline() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts]);
-    
+
   async function handleDelete(id) {
     console.log("id"+id);
     setModalIsOpen(false);
@@ -147,8 +149,15 @@ export default function Timeline() {
     navigate("/timeline");
   }
 
-
-  console.log(postByHashtag)
+  async function handleLike(postIdLiked, liked) {
+    try {
+      liked
+        ? await api.deleteLike(auth.token, postIdLiked)
+        : await api.postLike(auth.token, postIdLiked)
+    } catch (error) {
+      alert("Ocorreu um erro. Tente novamente.")
+    }
+  }
 
   return (
     <>
@@ -232,16 +241,24 @@ export default function Timeline() {
                   ) : (
                     <PostText>
                       <ReactHashtag
-
-                        onHashtagClick={(val) => {
-                          navigate(`/hashtag/${hashtag.substring(1).toLowerCase()}`)
-                        }}
+                        onHashtagClick={(val) =>
+                          navigate(`/hashtag/${val.substring(1).toLowerCase()}`)
+                        }
                       >
                         {post.textPost}
                       </ReactHashtag>
                     </PostText>
                   )}
                   <UserImg src={post.userImage} />
+                  <Likes>
+                    <Icon
+                      src={post.liked ? HeartFilled : HeartOutlined}
+                      onClick={() => handleLike(post.id, post.liked)}
+                    />
+                    <QntLikes>
+                      {post.likes} likes
+                    </QntLikes>
+                  </Likes>
                   <StyledLink href={post.link} target="_blank">
                     <LinkDetailsContainer href={post.link} target="_blank">
                       <LinkDetailsDescriptionContainer>
@@ -255,7 +272,8 @@ export default function Timeline() {
                     </LinkDetailsContainer>
                   </StyledLink>
                 </Post>
-              ))
+              )
+              )
             )}
           </PostsContainer>
           <HashtagsSidebar hashtagPost={hashtag} />
