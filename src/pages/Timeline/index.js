@@ -53,7 +53,7 @@ export default function Timeline() {
   const [disabled, setDisabled] = useState(false);
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [postByHashtag, setPostByHashtag] = useState([]);
+  const [attPage, setAttPage] = useState(false);
 
   const { hashtag } = useParams();
 
@@ -100,17 +100,17 @@ export default function Timeline() {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [posts]);
+  }, [attPage]);
 
   async function handleDelete(id) {
-    console.log("id"+id);
     setModalIsOpen(false);
     setIsLoading(true);
     try {
       await api.deletePost(id, auth.token);
       setIsLoading(false);
+      setAttPage(!attPage);
     } catch (error) {
-      alert("erro ao deletar o post");
+      alert("Erro ao deletar o post, tente novamente.");
     }
   }
 
@@ -122,12 +122,11 @@ export default function Timeline() {
   function submitEditPost(newText) {
     const promise = api.editPost(postId, auth.token, newText);
     promise.then(() => {
-      setTimeout(() => {
-        setDisabled(false);
-        setEdit(false);
-        setAtivo(true);
-        setPostId("");
-      }, 4000);
+      setDisabled(false);
+      setEdit(false);
+      setAtivo(true);
+      setPostId("");
+      setAttPage(!attPage);
     });
     promise.catch((error) => console.log(error));
   }
@@ -154,6 +153,7 @@ export default function Timeline() {
       liked
         ? await api.deleteLike(auth.token, postIdLiked)
         : await api.postLike(auth.token, postIdLiked)
+      setAttPage(!attPage);
     } catch (error) {
       alert("Ocorreu um erro. Tente novamente.")
     }
@@ -167,7 +167,7 @@ export default function Timeline() {
         <PageTitle>{hashtag === undefined ? 'timeline' : "#" + hashtag}</PageTitle>
         <MainContainer>
           <PostsContainer>
-            {hashtag === undefined ? <PublishPostForm /> : ''}
+            {hashtag === undefined ? <PublishPostForm attPage={attPage} setAttPage={setAttPage} /> : ''}
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
               serverError === false &&
@@ -276,7 +276,7 @@ export default function Timeline() {
               )
             )}
           </PostsContainer>
-          <HashtagsSidebar hashtagPost={hashtag} />
+          <HashtagsSidebar attPage={attPage} hashtagPost={hashtag} />
         </MainContainer>
       </FeedContainer>
     </>

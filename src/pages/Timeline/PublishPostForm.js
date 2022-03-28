@@ -12,7 +12,7 @@ import {
 import validator from 'validator';
 import AuthContext from '../../contexts/AuthContext';
 
-export default function PublishPostForm() {
+export default function PublishPostForm({attPage, setAttPage}) {
 
     const {auth} = useContext(AuthContext);
 
@@ -29,7 +29,6 @@ export default function PublishPostForm() {
             alert('O campo link do seu post deve conter uma URL válida.');
             return
         }
-        console.log(auth.token);
         
         setButton(false);
         setInput(false);
@@ -45,11 +44,11 @@ export default function PublishPostForm() {
         setInput(true);
         setLink('');
         setText('');
+        setAttPage(!attPage)
       }
 
       function submitFailure(error) {
         alert("Houve um erro no seu envio, tente novamente.");
-        console.log(error.response);
         setButton(true);
         setInput(true);
       }
