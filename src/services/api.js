@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "https://linkr-api-sql.herokuapp.com";
-// const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://linkr-api-sql.herokuapp.com"; 
+//const BASE_URL = "http://localhost:5000";
 
 function createConfig(token) {
   return {
@@ -46,6 +46,10 @@ async function getTrendingHashtags(token) {
   const config = createConfig(token);
   return axios.get(`${BASE_URL}/trendingHashtags`, config);
 }
+async function getPostByHashtag(token, hashtag){
+  const config=createConfig(token);
+  return axios.get(`${BASE_URL}/hashtag/${hashtag}`,config);
+}
 
 const api = {
   createUser,
@@ -56,6 +60,7 @@ const api = {
   getUserPosts,
   editPost,
   getTrendingHashtags,
+  getPostByHashtag
 };
 
 export default api;

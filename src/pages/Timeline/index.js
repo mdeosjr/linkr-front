@@ -38,6 +38,7 @@ import ReactHashtag from "react-hashtag";
 import HashtagsSidebar from "../../components/HashtagsSidebar/index.js";
 import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
+import { useParams } from 'react-router-dom';
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -50,9 +51,14 @@ export default function Timeline() {
   const [disabled, setDisabled] = useState(false);
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [postByHashtag, setPostByHashtag] = useState([]);
+  
+  const { hashtag } = useParams();
+
 
   const { auth } = useAuth();
   const navigate = useNavigate();
+
 
   Modal.setAppElement(document.querySelector(".root"));
   function openModal() {
@@ -64,7 +70,7 @@ export default function Timeline() {
   }
 
   useEffect(() => {
-    if (auth !== undefined) {
+    if (auth !== undefined && hashtag === undefined) {
       const promise = api.getTimelinePosts(auth.token);
       promise.then((response) => {
         setServerError(false);
@@ -77,10 +83,23 @@ export default function Timeline() {
         setServerError(true);
         setLoading(false);
       });
+    } else if (auth !== undefined && hashtag !== undefined) {
+      const promise = api.getPostByHashtag(auth.token, hashtag);
+      promise.then((response) => {
+        setServerError(false);
+        setLoading(false);
+        setPosts([]);
+        setPosts(response.data);
+      })
+      promise.catch((error) => {
+        console.log(error);
+        setServerError(true);
+        setLoading(false);
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts]);
-
+    
   async function handleDelete(id) {
     console.log(id);
     setModalIsOpen(false);
@@ -128,19 +147,22 @@ export default function Timeline() {
     navigate("/timeline");
   }
 
+
+  console.log(postByHashtag)
+
   return (
     <>
       <Header />
       <FeedContainer>
         <SearchBarTimeline></SearchBarTimeline>
-        <PageTitle>timeline</PageTitle>
+        <PageTitle>{hashtag === undefined ? 'timeline' : "#" + hashtag}</PageTitle>
         <MainContainer>
           <PostsContainer>
-            <PublishPostForm></PublishPostForm>
+            {hashtag === undefined ? <PublishPostForm /> : ''}
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
-            serverError === false &&
-            loading === false ? (
+              serverError === false &&
+              loading === false ? (
               <PostWarning>There are no posts yet</PostWarning>
             ) : (
               ""
@@ -151,6 +173,7 @@ export default function Timeline() {
                 the page
               </PostWarning>
             ) : (
+
               posts.map((post) => (
                 <Post key={post.id}>
                   <FlexDiv>
@@ -209,9 +232,10 @@ export default function Timeline() {
                   ) : (
                     <PostText>
                       <ReactHashtag
-                        onHashtagClick={(val) =>
-                          navigate(`/hashtag/${val.substring(1).toLowerCase()}`)
-                        }
+
+                        onHashtagClick={(val) => {
+                          navigate(`/hashtag/${hashtag.substring(1).toLowerCase()}`)
+                        }}
                       >
                         {post.textPost}
                       </ReactHashtag>
@@ -234,7 +258,7 @@ export default function Timeline() {
               ))
             )}
           </PostsContainer>
-          <HashtagsSidebar />
+          <HashtagsSidebar hashtagPost={hashtag} />
         </MainContainer>
       </FeedContainer>
     </>

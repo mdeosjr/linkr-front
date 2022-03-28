@@ -2,12 +2,15 @@ import { HashtagLink, SidebarContainer, SidebarTitle } from "./styles";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function HashtagsSidebar() {
+
+export default function HashtagsSidebar({ hashtagPost }) {
+
   const [hashtags, setHashtags] = useState([]);
   const { auth } = useAuth();
   const navigate = useNavigate();
+
 
   useEffect(() => {
     if (auth !== undefined) {
@@ -20,6 +23,7 @@ export default function HashtagsSidebar() {
       });
     }
   });
+  
 
   return (
     <>
@@ -28,15 +32,15 @@ export default function HashtagsSidebar() {
         {hashtags.length === 0
           ? ""
           : hashtags.map((hashtag) => (
-              <HashtagLink
-                key={hashtag.hashtagId}
-                onClick={() => {
-                  navigate(`/hashtag/${hashtag.hashtagText}`);
-                }}
-              >
-                # {hashtag.hashtagText}
-              </HashtagLink>
-            ))}
+            <HashtagLink
+              key={hashtag.hashtagId}
+              onClick={() => {               
+                navigate(`/hashtag/${hashtag.hashtagText}`);                
+              }}
+            >
+              # {hashtag.hashtagText}
+            </HashtagLink>
+          ))}
       </SidebarContainer>
     </>
   );

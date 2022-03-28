@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import UserPage from "./pages/User";
 
+
 function App() {
   return (
     <AuthProvider>
@@ -15,6 +16,7 @@ function App() {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/timeline" element={<Timeline />} />
           <Route path="/user/:id" element={<UserPage />} />
+          <Route path="/hashtag/:hashtag" element={<Timeline/>}/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
