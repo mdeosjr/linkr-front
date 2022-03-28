@@ -103,6 +103,7 @@ export default function Timeline() {
   }, [posts]);
 
   async function handleDelete(id) {
+    console.log("id"+id);
     setModalIsOpen(false);
     setIsLoading(true);
     try {
