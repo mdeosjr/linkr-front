@@ -41,6 +41,7 @@ import HeartOutlined from '../../assets/HeartOutlined.svg';
 import HashtagsSidebar from "../../components/HashtagsSidebar/index.js";
 import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
+import ReactTooltip from 'react-tooltip';
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -85,7 +86,7 @@ export default function Timeline() {
         setLoading(false);
       });
     } else if (auth && hashtag) {
-      
+
       const promise = api.getPostByHashtag(auth.token, hashtag);
       promise.then((response) => {
         setServerError(false);
@@ -250,13 +251,17 @@ export default function Timeline() {
                   )}
                   <UserImg src={post.userImage} />
                   <Likes>
-                    <Icon
-                      src={post.liked ? HeartFilled : HeartOutlined}
-                      onClick={() => handleLike(post.id, post.liked)}
-                    />
+                    <a data-tip={post.liked === true ? (post.usersLikes.length > 1 ? "Você" + "," + post.usersLikes[1] + " " + "e outras" + " " + (post.usersLikes.length - 2) + " " + "pessoas" : "Você") : post.usersLikes[0] + "," + post.usersLikes[1] + " " + "e outras" + " " + post.usersLikes.lenght - 2 + " " + "pessoas"}>
+                      <Icon
+                        src={post.liked ? HeartFilled : HeartOutlined}
+                        onClick={() => handleLike(post.id, post.liked)}
+                      />
+                    </a>
+                    <ReactTooltip place="bottom" type="light" effect="float" />
                     <QntLikes>
                       {post.likes} likes
                     </QntLikes>
+
                   </Likes>
                   <StyledLink href={post.link} target="_blank">
                     <LinkDetailsContainer href={post.link} target="_blank">
