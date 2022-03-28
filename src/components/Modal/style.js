@@ -13,7 +13,8 @@ const ButtonConfirm = styled.button`
     display:flex;
     align-items: center;
     justify-content: center;
-`
+    cursor: pointer;
+    `
 const ButtonDelete = styled.button`
     width: 134px;
     height: 37px;
@@ -26,7 +27,8 @@ const ButtonDelete = styled.button`
     display:flex;
     align-items: center;
     justify-content: center;
-`
+    cursor: pointer;
+    `
 const Form=styled.form`
     width: 300px;
     height:37px;

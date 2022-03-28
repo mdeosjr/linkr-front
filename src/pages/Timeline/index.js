@@ -53,12 +53,11 @@ export default function Timeline() {
   const [disabled, setDisabled] = useState(false);
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [attPage, setAttPage] = useState(false);
 
   const { hashtag } = useParams();
 
 
-  const { auth } = useAuth();
+  const { auth, attPage, setAttPage } = useAuth();
   const navigate = useNavigate();
 
 
@@ -72,12 +71,12 @@ export default function Timeline() {
   }
 
   useEffect(() => {
-    if (auth !== undefined && hashtag === undefined) {
+    if (auth && !hashtag) {
       const promise = api.getTimelinePosts(auth.token);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts(response.data);
+        setPosts([...response.data]);
       });
 
       promise.catch((error) => {
@@ -85,13 +84,13 @@ export default function Timeline() {
         setServerError(true);
         setLoading(false);
       });
-    } else if (auth !== undefined && hashtag !== undefined) {
+    } else if (auth && hashtag) {
+      
       const promise = api.getPostByHashtag(auth.token, hashtag);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts([]);
-        setPosts(response.data);
+        setPosts([...response.data]);
       })
       promise.catch((error) => {
         console.log(error);
@@ -100,8 +99,7 @@ export default function Timeline() {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attPage]);
-
+  }, [attPage, hashtag]);
   async function handleDelete(id) {
     setModalIsOpen(false);
     setIsLoading(true);
@@ -111,6 +109,7 @@ export default function Timeline() {
       setAttPage(!attPage);
     } catch (error) {
       alert("Erro ao deletar o post, tente novamente.");
+      setIsLoading(false);
     }
   }
 
@@ -184,7 +183,7 @@ export default function Timeline() {
             ) : (
 
               posts.map((post) => (
-                <Post key={post.id}>
+                <Post active={true} key={post.id}>
                   <FlexDiv>
                     <UserName onClick={() => navigate(`/user/${post.userId}`)}>
                       {post.userName}
@@ -209,7 +208,7 @@ export default function Timeline() {
                           {isLoading ? (
                             <SyncLoader color="white" size={5} />
                           ) : (
-                            "yes,delete it"
+                            "yes, delete it"
                           )}
                         </ButtonDelete>
                       </Form>
@@ -276,7 +275,7 @@ export default function Timeline() {
               )
             )}
           </PostsContainer>
-          <HashtagsSidebar attPage={attPage} hashtagPost={hashtag} />
+          <HashtagsSidebar attPage={attPage} setAttPage={setAttPage} setPosts={setPosts} hashtagPost={hashtag} />
         </MainContainer>
       </FeedContainer>
     </>
