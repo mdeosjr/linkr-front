@@ -56,7 +56,7 @@ export default function Timeline() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { hashtag } = useParams();
-
+  console.log(hashtag);
 
   const { auth, attPage, setAttPage } = useAuth();
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ export default function Timeline() {
         setLoading(false);
       });
     } else if (auth && hashtag) {
-      
+
       const promise = api.getPostByHashtag(auth.token, hashtag);
       promise.then((response) => {
         setServerError(false);
@@ -263,6 +263,7 @@ export default function Timeline() {
                     <QntLikes>
                       {post.likes} likes
                     </QntLikes>
+
                   </Likes>
                   <StyledLink href={post.link} target="_blank">
                     <LinkDetailsContainer href={post.link} target="_blank">
