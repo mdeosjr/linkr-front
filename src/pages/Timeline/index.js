@@ -71,6 +71,10 @@ export default function Timeline() {
   }
 
   useEffect(() => {
+    if(!auth){
+      console.log(auth)
+      navigate("/")
+    }
     if (auth && !hashtag) {
       const promise = api.getTimelinePosts(auth.token);
       promise.then((response) => {

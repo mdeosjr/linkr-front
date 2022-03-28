@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "https://linkr-api-sql.herokuapp.com"; 
-//const BASE_URL = "http://localhost:5000";
+//const BASE_URL = "https://linkr-api-sql.herokuapp.com"; 
+const BASE_URL = "http://localhost:5000";
 
 function createConfig(token) {
   return {
@@ -70,6 +70,11 @@ async function deleteLike(token, postId) {
   return axios.delete(`${BASE_URL}/likes/${postId}`, config);
 }
 
+async function deleteSession(token, id){
+  const config = createConfig(token);
+  return axios.delete(`${BASE_URL}/sessions/${id}`, config);
+}
+
 const api = {
   createUser,
   login,
@@ -84,7 +89,7 @@ const api = {
   postLike,
   deleteLike,
   getPostByHashtag,
-  BASE_URL
+  deleteSession,
 };
 
 export default api;
