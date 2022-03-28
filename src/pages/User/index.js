@@ -20,13 +20,16 @@ import { useEffect, useState } from "react";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
 import { useParams } from "react-router-dom";
+import { Icon, Likes, QntLikes } from "../../components/Likes.js";
+import HeartFilled from '../../assets/HeartFilled.svg';
+import HeartOutlined from '../../assets/HeartOutlined.svg';
 
 export default function UserPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [serverError, setServerError] = useState(false);
   const { id } = useParams();  
-  const { auth } = useAuth();
+  const { auth, attPage, setAttPage } = useAuth();
 
   useEffect(() => {
     if (auth !== undefined) {
@@ -44,7 +47,18 @@ export default function UserPage() {
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [attPage]);
+
+  async function handleLike(postIdLiked, liked) {
+    try {
+      liked
+        ? await api.deleteLike(auth.token, postIdLiked)
+        : await api.postLike(auth.token, postIdLiked)
+      setAttPage(!attPage);
+    } catch (error) {
+      alert("Ocorreu um erro. Tente novamente.")
+    }
+  }
 
   return (
     <>
@@ -56,7 +70,7 @@ export default function UserPage() {
             <PageTitle>{`${posts[0]?.name}'s posts`}</PageTitle>
           </UserHeader>
         }
-        {posts.length === 0 && serverError === false && loading === false ? (
+        {!posts[0]?.text && serverError === false && loading === false ? (
           <PostWarning>There are no posts yet</PostWarning>
         ) : (
           ""
@@ -68,10 +82,19 @@ export default function UserPage() {
           </PostWarning>
         ) : (
           posts.reverse().map((post) => (
-            <Post key={post.id}>
+            <Post active={post.id} key={post.id ? post.id : 1}>
                 <UserName>{post.name}</UserName>
                 <PostText>{post.text}</PostText>
                 <UserImg src={post.image} />
+                <Likes>
+                    <Icon
+                      src={post.liked ? HeartFilled : HeartOutlined}
+                      onClick={() => handleLike(post.id, post.liked)}
+                    />
+                    <QntLikes>
+                      {post.likes} likes
+                    </QntLikes>
+                  </Likes>
                 <LinkDetailsContainer>
                   <LinkDetailsDescriptionContainer>
                     <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>

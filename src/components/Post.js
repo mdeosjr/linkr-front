@@ -1,6 +1,7 @@
 import styled from "styled-components";
 
 const Post = styled.div`
+  display: ${props => !props.active ? 'none' : 'block'};
   background-color: #171717;
   width: 100%;
   height: 276px;
@@ -25,6 +26,7 @@ const UserName = styled.p`
   line-height: 23px;
   color: var(--white);
   margin-bottom: 7px;
+  cursor: pointer;
 
   @media (max-width: 620px) {
     font-size: 17px;
@@ -75,6 +77,10 @@ const PostText = styled.p`
     font-weight: 700;
     color: #fff;
     text-decoration: none;
+    cursor: pointer;
+    &:hover{
+      text-decoration: underline;
+    }
   }
 `;
 

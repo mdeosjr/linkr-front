@@ -28,7 +28,7 @@ const SidebarTitle = styled.p`
   margin-bottom: 22px;
 `;
 
-const HashtagLink = styled.p`
+const HashtagLink = styled.a`
   font-family: "Lato";
   font-style: normal;
   font-weight: 700;

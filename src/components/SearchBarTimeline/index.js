@@ -3,11 +3,13 @@ import SearchIcon from '../../assets/SearchIcon.svg';
 import { DebounceInput } from "react-debounce-input";
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
 export default function SearchBar() {
     const [textSearch, setTextSearch] = useState('');
     const [usersSearch, setUsersSearch] = useState(undefined);
     const [active, setActive] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if(textSearch.length > 2){
@@ -45,7 +47,7 @@ export default function SearchBar() {
                     <Result active={active}>
                         {usersSearch.map(user => {
                             return (
-                                <UserResult key={user.id}>
+                                <UserResult key={user.id} onClick={() => navigate(`/user/${user.id}`)}>
                                     <UserSearchImg src={user.image} />
                                     <p>{user.name}</p>
                                 </UserResult>

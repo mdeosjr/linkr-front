@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 
-export default function HashtagsSidebar({attPage, hashtagPost }) {
+export default function HashtagsSidebar({attPage, setAttPage }) {
 
   const [hashtags, setHashtags] = useState([]);
   const { auth } = useAuth();
@@ -29,14 +29,14 @@ export default function HashtagsSidebar({attPage, hashtagPost }) {
   return (
     <>
       <SidebarContainer>
-        <SidebarTitle>timeline</SidebarTitle>
+        <SidebarTitle>trending</SidebarTitle>
         {hashtags.length === 0
           ? ""
           : hashtags.map((hashtag) => (
             <HashtagLink
               key={hashtag.hashtagId}
-              onClick={() => {               
-                navigate(`/hashtag/${hashtag.hashtagText}`);                
+              onClick={() => {
+                navigate(`/hashtag/${hashtag.hashtagText}`);
               }}
             >
               # {hashtag.hashtagText}
