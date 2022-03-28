@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import UserPage from "./pages/User";
 
+
 function App() {
   return (
     <AuthProvider>
