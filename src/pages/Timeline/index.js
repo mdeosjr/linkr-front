@@ -56,7 +56,7 @@ export default function Timeline() {
   const [isLoading, setIsLoading] = useState(false);
 
   const { hashtag } = useParams();
-
+  console.log(hashtag);
 
   const { auth, attPage, setAttPage } = useAuth();
   const navigate = useNavigate();
