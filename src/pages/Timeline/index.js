@@ -85,7 +85,6 @@ export default function Timeline() {
   }, [posts]);
 
   async function handleDelete(id) {
-    console.log(id);
     setModalIsOpen(false);
     setIsLoading(true);
     try {
@@ -131,6 +130,16 @@ export default function Timeline() {
     navigate("/timeline");
   }
 
+  async function handleLike(postIdLike, liked) {
+    try {
+      liked
+        ? await api.deleteLike(auth.token, postIdLike)
+        : await api.postLike(auth.token, postIdLike)
+    } catch (error) {
+      alert("Ocorreu um erro. Tente novamente.")
+    }
+  }
+
   return (
     <>
       <Header />
@@ -142,8 +151,8 @@ export default function Timeline() {
             <PublishPostForm></PublishPostForm>
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
-            serverError === false &&
-            loading === false ? (
+              serverError === false &&
+              loading === false ? (
               <PostWarning>There are no posts yet</PostWarning>
             ) : (
               ""
@@ -154,87 +163,98 @@ export default function Timeline() {
                 the page
               </PostWarning>
             ) : (
-              posts.map((post) => (
-                <Post key={post.id}>
-                  <FlexDiv>
-                    <UserName onClick={() => navigate(`/user/${post.userId}`)}>
-                      {post.userName}
-                    </UserName>
-                    <Modal
-                      isOpen={modalIsOpen}
-                      onRequestClose={closeModal}
-                      style={customStyles}
-                    >
-                      <h1>
-                        Are you sure you want <br /> to delete this post?
-                      </h1>
-
-                      <Form>
-                        <ButtonConfirm onClick={() => handlePosts()}>
-                          no, go back
-                        </ButtonConfirm>
-                        <ButtonDelete
-                          onClick={() => handleDelete(post.id)}
-                          disabled={isLoading}
-                        >
-                          {isLoading ? (
-                            <SyncLoader color="white" size={5} />
-                          ) : (
-                            "yes,delete it"
-                          )}
-                        </ButtonDelete>
-                      </Form>
-                    </Modal>
-
-                    {post.userId === auth.id ? (
-                      <Agroup>
-                        <Edit
-                          src={editIcon}
-                          onClick={() => changePost(post.id, post.textPost)}
-                        />
-                        <Delete src={deleteIcon} onClick={() => openModal()} />
-                      </Agroup>
-                    ) : (
-                      ""
-                    )}
-                  </FlexDiv>
-                  {edit && postId === post.id ? (
-                    <InputText
-                      autoFocus
-                      onFocus={(e) => e.currentTarget.select()}
-                      height={"50px"}
-                      ativo={ativo}
-                      disabled={disabled}
-                      value={text}
-                      onChange={(e) => setText(e.target.value)}
-                      onKeyDown={(e) => handlerKey(e)}
-                    />
-                  ) : (
-                    <PostText>
-                      <ReactHashtag
-                        onHashtagClick={(val) =>
-                          navigate(`/hashtag/${val.substring(1).toLowerCase()}`)
-                        }
+              posts.map((post) => {
+                return (
+                  <Post key={post.id}>
+                    <FlexDiv>
+                      <UserName onClick={() => navigate(`/user/${post.userId}`)}>
+                        {post.userName}
+                      </UserName>
+                      <Modal
+                        isOpen={modalIsOpen}
+                        onRequestClose={closeModal}
+                        style={customStyles}
                       >
-                        {post.textPost}
-                      </ReactHashtag>
-                    </PostText>
-                  )}
-                  <UserImg src={post.userImage} />
-                  <StyledLink href={post.link} target="_blank">
-                    <LinkDetailsContainer href={post.link} target="_blank">
-                      <LinkDetailsDescriptionContainer>
-                        <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
-                        <LinkDetailsDescription>
-                          {post.linkDescription}
-                        </LinkDetailsDescription>
-                        <LinkParagraph>{post.link}</LinkParagraph>
-                      </LinkDetailsDescriptionContainer>
-                      <LinkDetailsImg src={post.linkImage} />
-                    </LinkDetailsContainer>
-                  </StyledLink>
-                </Post>
-              ))
+                        <h1>
+                          Are you sure you want <br /> to delete this post?
+                        </h1>
+
+                        <Form>
+                          <ButtonConfirm onClick={() => handlePosts()}>
+                            no, go back
+                          </ButtonConfirm>
+                          <ButtonDelete
+                            onClick={() => handleDelete(post.id)}
+                            disabled={isLoading}
+                          >
+                            {isLoading ? (
+                              <SyncLoader color="white" size={5} />
+                            ) : (
+                              "yes,delete it"
+                            )}
+                          </ButtonDelete>
+                        </Form>
+                      </Modal>
+
+                      {post.userId === auth.id ? (
+                        <Agroup>
+                          <Edit
+                            src={editIcon}
+                            onClick={() => changePost(post.id, post.textPost)}
+                          />
+                          <Delete src={deleteIcon} onClick={() => openModal()} />
+                        </Agroup>
+                      ) : (
+                        ""
+                      )}
+                    </FlexDiv>
+                    {edit && postId === post.id ? (
+                      <InputText
+                        autoFocus
+                        onFocus={(e) => e.currentTarget.select()}
+                        height={"50px"}
+                        ativo={ativo}
+                        disabled={disabled}
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        onKeyDown={(e) => handlerKey(e)}
+                      />
+                    ) : (
+                      <PostText>
+                        <ReactHashtag
+                          onHashtagClick={(val) =>
+                            navigate(`/hashtag/${val.substring(1).toLowerCase()}`)
+                          }
+                        >
+                          {post.textPost}
+                        </ReactHashtag>
+                      </PostText>
+                    )}
+                    <UserImg src={post.userImage} />
+                    <Likes>
+                      <Icon
+                        src={post.liked ? HeartFilled : HeartOutlined}
+                        onClick={() => handleLike(post.id, post.liked)}
+                      />
+                      <QntLikes>
+                        {post.likes} likes
+                      </QntLikes>
+                    </Likes>
+                    <StyledLink href={post.link} target="_blank">
+                      <LinkDetailsContainer href={post.link} target="_blank">
+                        <LinkDetailsDescriptionContainer>
+                          <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
+                          <LinkDetailsDescription>
+                            {post.linkDescription}
+                          </LinkDetailsDescription>
+                          <LinkParagraph>{post.link}</LinkParagraph>
+                        </LinkDetailsDescriptionContainer>
+                        <LinkDetailsImg src={post.linkImage} />
+                      </LinkDetailsContainer>
+                    </StyledLink>
+                  </Post>
+                )
+              })
             )}
           </PostsContainer>
           <HashtagsSidebar />
