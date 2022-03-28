@@ -252,10 +252,7 @@ export default function Timeline() {
                   )}
                   <UserImg src={post.userImage} />
                   <Likes>
-<<<<<<< HEAD
-=======
             
->>>>>>> main
                     <a data-tip={post.liked === true ? (post.usersLikes.length > 1 ? "Você" + "," + post.usersLikes[1] + " " + "e outras" + " " + (post.usersLikes.length - 2) + " " + "pessoas" : "Você") : post.usersLikes[0] + "," + post.usersLikes[1] + " " + "e outras" + " " + post.usersLikes.lenght - 2 + " " + "pessoas"}>
                       <Icon
                         src={post.liked ? HeartFilled : HeartOutlined}
