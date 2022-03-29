@@ -87,12 +87,12 @@ export default function Timeline() {
       });
 
       promise.catch((error) => {
-        console.log(error);
         setServerError(true);
         setLoading(false);
       });
-    } else if (auth && hashtag) {
-
+    } 
+    
+    if (auth && hashtag) {
       const promise = api.getPostByHashtag(auth.token, hashtag);
       promise.then((response) => {
         setServerError(false);
@@ -100,13 +100,13 @@ export default function Timeline() {
         setPosts(response.data);
       })
       promise.catch((error) => {
-        console.log(error);
         setServerError(true);
         setLoading(false);
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attPage, hashtag]);
+
   async function handleDelete(id) {
     setModalIsOpen(false);
     setIsLoading(true);
@@ -126,6 +126,7 @@ export default function Timeline() {
     setPostId(id);
     setText(postText);
   }
+
   function submitEditPost(newText) {
     const promise = api.editPost(postId, auth.token, newText);
     promise.then(() => {
@@ -137,6 +138,7 @@ export default function Timeline() {
     });
     promise.catch((error) => console.log(error));
   }
+
   function handlerKey(e) {
     if (e.keyCode === 13) {
       setDisabled(true);
@@ -150,6 +152,7 @@ export default function Timeline() {
       setPostId("");
     }
   }
+
   function handlePosts() {
     setModalIsOpen(false);
     navigate("/timeline");
@@ -269,7 +272,11 @@ export default function Timeline() {
                       </QntLikes>
                       : <Tooltip
                         data-tip={
-                          post.usersLikes.length > 2 ? `${post.usersLikes[0]}, ${post.usersLikes[1]} e outras ${post.usersLikes.length - 2} pessoas` : post.usersLikes.length === 2 ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram` : `${post.usersLikes[0]} curtiu`
+                          post.usersLikes.length > 2 ? 
+                          `${post.usersLikes[0]}, ${post.usersLikes[1]} e outras ${post.usersLikes.length - 2} pessoas` 
+                          : post.usersLikes.length === 2 ? 
+                          `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram` 
+                          : `${post.usersLikes[0]} curtiu`
                         }>
                         <QntLikes>
                           {post.likes} likes
