@@ -13,10 +13,14 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   let navigate = useNavigate();
-  const { setAuth } = useAuth();
+  const { auth, setAuth } = useAuth();
 
   function login(e) {
     e.preventDefault();
+
+    if (auth) {
+      return navigate("/timeline");
+    }
 
     const promise = api.login({email, password})
 
