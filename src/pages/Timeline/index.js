@@ -253,7 +253,7 @@ export default function Timeline() {
                   <UserImg src={post.userImage} />
                   <Likes>
             
-                    <a data-tip={post.liked === true ? (post.usersLikes.length > 1 ? "Você" + "," + post.usersLikes[1] + " " + "e outras" + " " + (post.usersLikes.length - 2) + " " + "pessoas" : "Você") : post.usersLikes[0] + "," + post.usersLikes[1] + " " + "e outras" + " " + post.usersLikes.lenght - 2 + " " + "pessoas"}>
+                    <a data-tip={post.liked === true ? (post.usersLikes.length > 1 ? "Você" + "," + post.usersLikes[1] + " " + "e outras" + " " + (post.usersLikes.length - 2) + " " + "pessoas" : "Você") :(post.usersLikes.length===0 ? "0 pessoas curtiram" : post.usersLikes[0] + "," + post.usersLikes[0] + " " + "e outras" + " " + post.usersLikes.lenght - 2 + " " + "pessoas")}>
                       <Icon
                         src={post.liked ? HeartFilled : HeartOutlined}
                         onClick={() => handleLike(post.id, post.liked)}
