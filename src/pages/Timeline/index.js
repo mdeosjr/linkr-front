@@ -42,6 +42,7 @@ import HashtagsSidebar from "../../components/HashtagsSidebar/index.js";
 import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
 import ReactTooltip from 'react-tooltip';
+import styled from "styled-components";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -54,17 +55,19 @@ export default function Timeline() {
   const [disabled, setDisabled] = useState(false);
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [deletePostId, setDeletePostId] = useState(null);
+  
 
   const { hashtag } = useParams();
-  console.log(hashtag);
 
   const { auth, attPage, setAttPage } = useAuth();
   const navigate = useNavigate();
 
 
   Modal.setAppElement(document.querySelector(".root"));
-  function openModal() {
+  function openModal(id) {
     setModalIsOpen(true);
+    setDeletePostId(id)
   }
 
   function closeModal() {
@@ -72,12 +75,15 @@ export default function Timeline() {
   }
 
   useEffect(() => {
+    if(!auth){
+      navigate("/")
+    }
     if (auth && !hashtag) {
       const promise = api.getTimelinePosts(auth.token);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts([...response.data]);
+        setPosts(response.data);
       });
 
       promise.catch((error) => {
@@ -91,7 +97,7 @@ export default function Timeline() {
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts([...response.data]);
+        setPosts(response.data);
       })
       promise.catch((error) => {
         console.log(error);
@@ -107,6 +113,7 @@ export default function Timeline() {
     try {
       await api.deletePost(id, auth.token);
       setIsLoading(false);
+      setDeletePostId(null);
       setAttPage(!attPage);
     } catch (error) {
       alert("Erro ao deletar o post, tente novamente.");
@@ -204,7 +211,7 @@ export default function Timeline() {
                           no, go back
                         </ButtonConfirm>
                         <ButtonDelete
-                          onClick={() => handleDelete(post.id)}
+                          onClick={() => handleDelete(deletePostId)}
                           disabled={isLoading}
                         >
                           {isLoading ? (
@@ -222,7 +229,7 @@ export default function Timeline() {
                           src={editIcon}
                           onClick={() => changePost(post.id, post.textPost)}
                         />
-                        <Delete src={deleteIcon} onClick={() => openModal()} />
+                        <Delete src={deleteIcon} onClick={() => openModal(post.id)} />
                       </Agroup>
                     ) : (
                       ""
@@ -252,18 +259,24 @@ export default function Timeline() {
                   )}
                   <UserImg src={post.userImage} />
                   <Likes>
-            
-                    <a data-tip={post.liked === true ? (post.usersLikes.length > 1 ? "Você" + "," + post.usersLikes[1] + " " + "e outras" + " " + (post.usersLikes.length - 2) + " " + "pessoas" : "Você") :(post.usersLikes.length===0 ? "0 pessoas curtiram" : post.usersLikes[0] + "," + post.usersLikes[0] + " " + "e outras" + " " + post.usersLikes.lenght - 2 + " " + "pessoas")}>
-                      <Icon
-                        src={post.liked ? HeartFilled : HeartOutlined}
-                        onClick={() => handleLike(post.id, post.liked)}
-                      />
-                    </a>
+                    <Icon
+                      src={post.liked ? HeartFilled : HeartOutlined}
+                      onClick={() => handleLike(post.id, post.liked)}
+                    />
+                    {post.usersLikes.length === 0 ?
+                      <QntLikes>
+                        {post.likes} likes
+                      </QntLikes>
+                      : <Tooltip
+                        data-tip={
+                          post.usersLikes.length > 2 ? `${post.usersLikes[0]}, ${post.usersLikes[1]} e outras ${post.usersLikes.length - 2} pessoas` : post.usersLikes.length === 2 ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram` : `${post.usersLikes[0]} curtiu`
+                        }>
+                        <QntLikes>
+                          {post.likes} likes
+                        </QntLikes>
+                      </Tooltip>
+                    }
                     <ReactTooltip place="bottom" type="light" effect="float" />
-                    <QntLikes>
-                      {post.likes} likes
-                    </QntLikes>
-
                   </Likes>
                   <StyledLink href={post.link} target="_blank">
                     <LinkDetailsContainer href={post.link} target="_blank">
@@ -288,6 +301,9 @@ export default function Timeline() {
     </>
   );
 }
+
+const Tooltip = styled.a`
+`
 
 const customStyles = {
   content: {

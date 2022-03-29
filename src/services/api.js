@@ -69,6 +69,10 @@ async function deleteLike(token, postId) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/likes/${postId}`, config);
 }
+async function deleteSession(token, id){
+  const config = createConfig(token);
+  return axios.delete(`${BASE_URL}/sessions/${id}`, config);
+}
 
 const api = {
   createUser,
@@ -84,7 +88,7 @@ const api = {
   postLike,
   deleteLike,
   getPostByHashtag,
-  BASE_URL
+  deleteSession,
 };
 
 export default api;

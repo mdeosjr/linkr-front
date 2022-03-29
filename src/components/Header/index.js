@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth.js";
 import SearchBar from "../SearchBar";
+import api from "../../services/api";
 
 export default function Header() {
   const { auth } = useAuth();
@@ -23,6 +24,7 @@ export default function Header() {
   };
 
   const logoutUser = () => {
+    api.deleteSession(auth.token, auth.id);
     localStorage.removeItem("auth");
     navigate("/");
   };
