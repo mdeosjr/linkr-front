@@ -33,10 +33,12 @@ async function getUserPosts(token, userId) {
   const config = createConfig(token);
   return axios.get(`${BASE_URL}/user/${userId}`, config);
 }
+
 async function deletePost(id,token){
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/post/${id}`,config);
 }
+
 async function editPost(postId, token, text) {
   const config = createConfig(token);
   return axios.put(`${BASE_URL}/post/${postId}`, {text}, config);
@@ -50,6 +52,7 @@ async function getTrendingHashtags(token) {
   const config = createConfig(token);
   return axios.get(`${BASE_URL}/trendingHashtags`, config);
 }
+
 async function getPostByHashtag(token, hashtag){
   const config=createConfig(token);
   return axios.get(`${BASE_URL}/hashtag/${hashtag}`,config);
