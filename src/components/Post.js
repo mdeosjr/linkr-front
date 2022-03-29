@@ -1,8 +1,9 @@
 import styled from "styled-components";
 
 const Post = styled.div`
-  display: ${props => !props.active ? 'none' : 'block'};
+  display: ${(props) => (!props.active ? "none" : "block")};
   background-color: #171717;
+  max-width: 620px;
   width: 100%;
   height: 276px;
   border-radius: 16px;
@@ -27,6 +28,8 @@ const UserName = styled.p`
   color: var(--white);
   margin-bottom: 7px;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (max-width: 620px) {
     font-size: 17px;
@@ -66,6 +69,7 @@ const PostText = styled.p`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (max-width: 620px) {
     font-size: 15px;
@@ -78,7 +82,9 @@ const PostText = styled.p`
     color: #fff;
     text-decoration: none;
     cursor: pointer;
-    &:hover{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:hover {
       text-decoration: underline;
     }
   }

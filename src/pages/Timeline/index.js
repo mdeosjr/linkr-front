@@ -36,13 +36,15 @@ import SyncLoader from "react-spinners/PulseLoader";
 import SearchBarTimeline from "../../components/SearchBarTimeline/index.js";
 import ReactHashtag from "react-hashtag";
 import { Icon, Likes, QntLikes } from "../../components/Likes.js";
-import HeartFilled from '../../assets/HeartFilled.svg';
-import HeartOutlined from '../../assets/HeartOutlined.svg';
+import HeartFilled from "../../assets/HeartFilled.svg";
+import HeartOutlined from "../../assets/HeartOutlined.svg";
+import CommentsIcon from "../../assets/CommentsIcon.svg";
 import HashtagsSidebar from "../../components/HashtagsSidebar/index.js";
 import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
-import ReactTooltip from 'react-tooltip';
+import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
+import { Comments, QntComments } from "../../components/Comments.js";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -56,18 +58,16 @@ export default function Timeline() {
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [deletePostId, setDeletePostId] = useState(null);
-  
 
   const { hashtag } = useParams();
 
   const { auth, attPage, setAttPage } = useAuth();
   const navigate = useNavigate();
 
-
   Modal.setAppElement(document.querySelector(".root"));
   function openModal(id) {
     setModalIsOpen(true);
-    setDeletePostId(id)
+    setDeletePostId(id);
   }
 
   function closeModal() {
@@ -75,8 +75,8 @@ export default function Timeline() {
   }
 
   useEffect(() => {
-    if(!auth){
-      navigate("/")
+    if (!auth) {
+      navigate("/");
     }
     if (auth && !hashtag) {
       const promise = api.getTimelinePosts(auth.token);
@@ -90,19 +90,19 @@ export default function Timeline() {
         setServerError(true);
         setLoading(false);
       });
-    } 
-    
+    }
+
     if (auth && hashtag) {
       const promise = api.getPostByHashtag(auth.token, hashtag);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
         setPosts(response.data);
-      })
+      });
       promise.catch((error) => {
         setServerError(true);
         setLoading(false);
-      })
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attPage, hashtag]);
@@ -162,27 +162,32 @@ export default function Timeline() {
     try {
       liked
         ? await api.deleteLike(auth.token, postIdLiked)
-        : await api.postLike(auth.token, postIdLiked)
+        : await api.postLike(auth.token, postIdLiked);
       setAttPage(!attPage);
     } catch (error) {
-      alert("Ocorreu um erro. Tente novamente.")
+      alert("Ocorreu um erro. Tente novamente.");
     }
   }
-
 
   return (
     <>
       <Header />
       <FeedContainer>
         <SearchBarTimeline></SearchBarTimeline>
-        <PageTitle>{hashtag === undefined ? 'timeline' : "#" + hashtag}</PageTitle>
+        <PageTitle>
+          {hashtag === undefined ? "timeline" : "#" + hashtag}
+        </PageTitle>
         <MainContainer>
           <PostsContainer>
-            {hashtag === undefined ? <PublishPostForm attPage={attPage} setAttPage={setAttPage} /> : ''}
+            {hashtag === undefined ? (
+              <PublishPostForm attPage={attPage} setAttPage={setAttPage} />
+            ) : (
+              ""
+            )}
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
-              serverError === false &&
-              loading === false ? (
+            serverError === false &&
+            loading === false ? (
               <PostWarning>There are no posts yet</PostWarning>
             ) : (
               ""
@@ -193,7 +198,6 @@ export default function Timeline() {
                 the page
               </PostWarning>
             ) : (
-
               posts.map((post) => (
                 <Post active={true} key={post.id}>
                   <FlexDiv>
@@ -232,7 +236,10 @@ export default function Timeline() {
                           src={editIcon}
                           onClick={() => changePost(post.id, post.textPost)}
                         />
-                        <Delete src={deleteIcon} onClick={() => openModal(post.id)} />
+                        <Delete
+                          src={deleteIcon}
+                          onClick={() => openModal(post.id)}
+                        />
                       </Agroup>
                     ) : (
                       ""
@@ -266,25 +273,34 @@ export default function Timeline() {
                       src={post.liked ? HeartFilled : HeartOutlined}
                       onClick={() => handleLike(post.id, post.liked)}
                     />
-                    {post.usersLikes.length === 0 ?
-                      <QntLikes>
-                        {post.likes} likes
-                      </QntLikes>
-                      : <Tooltip
+                    {post.usersLikes.length === 0 ? (
+                      <QntLikes>{post.likes} likes</QntLikes>
+                    ) : (
+                      <Tooltip
                         data-tip={
-                          post.usersLikes.length > 2 ? 
-                          `${post.usersLikes[0]}, ${post.usersLikes[1]} e outras ${post.usersLikes.length - 2} pessoas` 
-                          : post.usersLikes.length === 2 ? 
-                          `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram` 
-                          : `${post.usersLikes[0]} curtiu`
-                        }>
-                        <QntLikes>
-                          {post.likes} likes
-                        </QntLikes>
+                          post.usersLikes.length > 2
+                            ? `${post.usersLikes[0]}, ${
+                                post.usersLikes[1]
+                              } e outras ${post.usersLikes.length - 2} pessoas`
+                            : post.usersLikes.length === 2
+                            ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
+                            : `${post.usersLikes[0]} curtiu`
+                        }
+                      >
+                        <QntLikes>{post.likes} likes</QntLikes>
                       </Tooltip>
-                    }
+                    )}
                     <ReactTooltip place="bottom" type="light" effect="float" />
                   </Likes>
+
+                  <Comments>
+                    <Icon src={CommentsIcon} />
+
+                    <QntComments>
+                      {post.likes} <p>comments</p>
+                    </QntComments>
+                  </Comments>
+
                   <StyledLink href={post.link} target="_blank">
                     <LinkDetailsContainer href={post.link} target="_blank">
                       <LinkDetailsDescriptionContainer>
@@ -298,19 +314,22 @@ export default function Timeline() {
                     </LinkDetailsContainer>
                   </StyledLink>
                 </Post>
-              )
-              )
+              ))
             )}
           </PostsContainer>
-          <HashtagsSidebar attPage={attPage} setAttPage={setAttPage} setPosts={setPosts} hashtagPost={hashtag} />
+          <HashtagsSidebar
+            attPage={attPage}
+            setAttPage={setAttPage}
+            setPosts={setPosts}
+            hashtagPost={hashtag}
+          />
         </MainContainer>
       </FeedContainer>
     </>
   );
 }
 
-const Tooltip = styled.a`
-`
+const Tooltip = styled.a``;
 
 const customStyles = {
   content: {

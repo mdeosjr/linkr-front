@@ -1,24 +1,26 @@
 import styled from "styled-components";
 
-const Likes = styled.div`
+const Comments = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   position: absolute;
-  left: 25px;
-  top: 80px;
+  width: 80px;
+  left: 0px;
+  top: 140px;
   gap: 5px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  p {
+    display: inline-block;
+  }
   @media (max-width: 620px) {
     left: 15px;
+    width: 30px;
   }
 `;
 
-const Icon = styled.img`
-  width: 20px;
-  cursor: pointer;
-`;
-
-const QntLikes = styled.p`
+const QntComments = styled.p`
   all: unset;
   font-size: 11px;
   color: #fff;
@@ -26,6 +28,11 @@ const QntLikes = styled.p`
   &:hover {
     text-decoration: underline;
   }
+  @media (max-width: 620px) {
+    p {
+      display: none;
+    }
+  }
 `;
 
-export { Likes, Icon, QntLikes };
+export { Comments, QntComments };
