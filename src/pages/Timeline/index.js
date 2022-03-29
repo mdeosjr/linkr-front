@@ -55,6 +55,8 @@ export default function Timeline() {
   const [disabled, setDisabled] = useState(false);
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [deletePostId, setDeletePostId] = useState(null);
+  
 
   const { hashtag } = useParams();
 
@@ -63,8 +65,9 @@ export default function Timeline() {
 
 
   Modal.setAppElement(document.querySelector(".root"));
-  function openModal() {
+  function openModal(id) {
     setModalIsOpen(true);
+    setDeletePostId(id)
   }
 
   function closeModal() {
@@ -72,12 +75,15 @@ export default function Timeline() {
   }
 
   useEffect(() => {
+    if(!auth){
+      navigate("/")
+    }
     if (auth && !hashtag) {
       const promise = api.getTimelinePosts(auth.token);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts([...response.data]);
+        setPosts(response.data);
       });
 
       promise.catch((error) => {
@@ -91,7 +97,7 @@ export default function Timeline() {
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts([...response.data]);
+        setPosts(response.data);
       })
       promise.catch((error) => {
         console.log(error);
@@ -107,6 +113,7 @@ export default function Timeline() {
     try {
       await api.deletePost(id, auth.token);
       setIsLoading(false);
+      setDeletePostId(null);
       setAttPage(!attPage);
     } catch (error) {
       alert("Erro ao deletar o post, tente novamente.");
@@ -204,7 +211,7 @@ export default function Timeline() {
                           no, go back
                         </ButtonConfirm>
                         <ButtonDelete
-                          onClick={() => handleDelete(post.id)}
+                          onClick={() => handleDelete(deletePostId)}
                           disabled={isLoading}
                         >
                           {isLoading ? (
@@ -222,7 +229,7 @@ export default function Timeline() {
                           src={editIcon}
                           onClick={() => changePost(post.id, post.textPost)}
                         />
-                        <Delete src={deleteIcon} onClick={() => openModal()} />
+                        <Delete src={deleteIcon} onClick={() => openModal(post.id)} />
                       </Agroup>
                     ) : (
                       ""
