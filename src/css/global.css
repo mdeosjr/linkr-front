@@ -4,8 +4,7 @@
 font-family: 'Oswald', sans-serif;
 font-family: 'Passion One', cursive; */
 
-
-:root{
+:root {
   --red: #ac0000;
   --white: #ffffff;
   --black-header: #151515;
@@ -31,3 +30,10 @@ body {
   min-height: 100vh;
 }
 
+html {
+  overflow: scroll;
+}
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
