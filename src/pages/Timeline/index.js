@@ -242,6 +242,7 @@ export default function Timeline() {
             ) : (
               ""
             )}
+            <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts} />
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
             serverError === false &&

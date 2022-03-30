@@ -1,11 +1,9 @@
 import axios from "axios";
 
 // const BASE_URL = "https://linkr-api-sql.herokuapp.com";
-
 const BASE_URL = "http://localhost:5000";
 
 function createConfig(token) {
-  console.log("token do config front", token);
   return {
     headers: {
       Authorization: `Bearer ${token}`,
