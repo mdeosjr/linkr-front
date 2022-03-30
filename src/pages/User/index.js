@@ -161,6 +161,7 @@ export default function Timeline() {
         <PageTitle>
           {posts[0]?.name}'s posts
             {posts[0]?.userId === auth.id ?'' : <ButtonFollow followingId={id}/>}
+            {console.log("postsId",posts[0]?.userId)}
         </PageTitle>
         <MainContainer>
           <PostsContainer>
