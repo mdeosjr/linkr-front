@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import api from "../../services/api";
-import Loader from "../Loader";
 import ButtonFollows from "./style";
+import SyncLoader from "react-spinners/PulseLoader";
 
 export function ButtonFollow({ followingId }) {
     const [isFollow, setIsFollow] = useState(false);
@@ -13,13 +13,14 @@ export function ButtonFollow({ followingId }) {
         if (auth) {
             const promise = api.getFollow(auth.token, followingId);
             promise.then((response) => {
+                console.log("response", response.data);
                 setIsFollow(response.data.follow);
             })
             promise.catch((error) => {
                 alert("erro ao carregar seguidor");
             })
         }
-    }, [follow]);
+    }, []);
 
     async function follow(followingId) {
         setIsDisable(true);
@@ -45,7 +46,7 @@ export function ButtonFollow({ followingId }) {
             onClick={() => follow(followingId)}
             isFollow={isFollow}
             disabled={isDisable}>
-            {isDisable ? <Loader /> : (!isFollow ? 'Follow' : 'Unfollow')}
+            {isDisable ? <SyncLoader color="white" size={5} /> : (!isFollow ? 'Follow' : 'Unfollow')}
         </ButtonFollows>
     );
 }
