@@ -45,6 +45,9 @@ import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
+import LoadingBar from "../../components/LoadingBar";
+import InfiniteScroll from 'react-infinite-scroll-component';
+import useInterval from 'use-interval'
 import {
   Comment,
   CommentBox,
@@ -71,6 +74,7 @@ export default function Timeline() {
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [deletePostId, setDeletePostId] = useState(null);
+  const [newPosts, setNewPosts] = useState(0);
   const [postWithComments, setPostWithComments] = useState();
   const [newComment, setNewComment] = useState([]);
   const [postComments, setPostComments] = useState([]);
@@ -94,8 +98,9 @@ export default function Timeline() {
     if (!auth) {
       navigate("/");
     }
+
     if (auth && !hashtag) {
-      const promise = api.getTimelinePosts(auth.token);
+      const promise = api.getTimelinePosts(auth.token, auth.id);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
@@ -115,6 +120,7 @@ export default function Timeline() {
         setLoading(false);
         setPosts(response.data);
       });
+
       promise.catch((error) => {
         setServerError(true);
         setLoading(false);
@@ -122,6 +128,17 @@ export default function Timeline() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attPage, hashtag, postWithComments, postComments]);
+
+  useInterval(() => {
+    const promise = api.getTimelinePosts(auth.token, auth.id);
+    promise.then((response) => {
+      if (response.data?.length === posts?.length) {
+        return setNewPosts(0);
+      } else if (response.data?.length > posts?.length) {
+        return setNewPosts(response.data.length - posts.length);
+      }
+    })
+  }, 15000)
 
   async function handleDelete(id) {
     setModalIsOpen(false);
