@@ -122,7 +122,7 @@ export default function Timeline() {
         return setNewPosts(response.data.length - posts.length);
       }
     })
-  }, 10000)
+  }, 15000)
 
   async function handleDelete(id) {
     setModalIsOpen(false);
