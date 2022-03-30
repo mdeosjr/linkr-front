@@ -1,14 +1,16 @@
 import styled from "styled-components";
 
 const Post = styled.div`
-  display: ${props => !props.active ? 'none' : 'block'};
+  display: ${(props) => (!props.active ? "none" : "block")};
   background-color: #171717;
+  max-width: 620px;
   width: 100%;
   height: 276px;
   border-radius: 16px;
   position: relative;
   padding: 19px 23px 20px 87px;
-  margin-bottom: 16px;
+  margin-top: 16px;
+  z-index: 2;
 
   @media (max-width: 620px) {
     width: 100%;
@@ -27,6 +29,8 @@ const UserName = styled.p`
   color: var(--white);
   margin-bottom: 7px;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (max-width: 620px) {
     font-size: 17px;
@@ -61,11 +65,12 @@ const PostText = styled.p`
   color: #b7b7b7;
   /* white-space: wrap;
   text-overflow: ellipsis; */
-  max-width: 100ch;
+  max-width: 100vh;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (max-width: 620px) {
     font-size: 15px;
@@ -78,7 +83,9 @@ const PostText = styled.p`
     color: #fff;
     text-decoration: none;
     cursor: pointer;
-    &:hover{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:hover {
       text-decoration: underline;
     }
   }
@@ -90,7 +97,7 @@ const LinkDetailsContainer = styled.div`
   border: 1px solid #4d4d4d;
   border-radius: 11px;
   position: relative;
-  padding: 24px 0 43px 19px;
+  padding: 24px 0 0px 19px;
   display: flex;
   flex-direction: row;
 
