@@ -71,7 +71,9 @@ export default function Timeline() {
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [deletePostId, setDeletePostId] = useState(null);
-  const [postWithComments, setPostWithComments] = useState([]);
+  const [postWithComments, setPostWithComments] = useState();
+  const [newComment, setNewComment] = useState([]);
+  const [postComments, setPostComments] = useState([]);
 
   const { hashtag } = useParams();
 
@@ -119,7 +121,7 @@ export default function Timeline() {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attPage, hashtag]);
+  }, [attPage, hashtag, postWithComments, postComments]);
 
   async function handleDelete(id) {
     setModalIsOpen(false);
@@ -183,15 +185,32 @@ export default function Timeline() {
     }
   }
 
-  function handleCommentsDisplay(postId) {
-    const postsArray = [...postWithComments];
-    if (postsArray.includes(postId)) {
-      postsArray.splice(postsArray.indexOf(postId), 1);
-      setPostWithComments(postsArray);
+  async function handleCommentsDisplay(postId) {
+    const comments = await api.getPostComments(auth.token, postId);
+    setPostComments(comments.data);
+    if (postWithComments === postId) {
+      setPostWithComments(0);
     } else {
-      postsArray.push(postId);
-      setPostWithComments(postsArray);
+      setPostWithComments(postId);
     }
+  }
+
+  async function createComment(postId) {
+    const promise = api.createComment(auth.token, postId, auth.id, newComment);
+
+    setNewComment("");
+
+    promise.then((response) => {
+      console.log(response);
+      const updatedComments = api.getPostComments(auth.token, postId);
+      updatedComments.then((comments) => {
+        console.log(comments.data);
+        setPostComments(comments.data);
+      });
+    });
+    promise.catch((error) => {
+      console.log(error);
+    });
   }
 
   return (
@@ -337,7 +356,7 @@ export default function Timeline() {
                       <Icon src={CommentsIcon} />
 
                       <QntComments>
-                        {post.likes} <p>comments</p>
+                        {post.comments} <p>comments</p>
                       </QntComments>
                     </Comments>
 
@@ -355,32 +374,44 @@ export default function Timeline() {
                     </StyledLink>
                   </Post>
                   <CommentsContainer
-                    active={postWithComments.includes(post.id) ? true : false}
+                    active={postWithComments === post.id ? true : false}
                   >
-                    <Comment>
-                      <CommentUserIcon src={post.userImage} />
-                      <CommentBox>
-                        <CommentUserBox>
-                          <CommentUserName>João Avatares </CommentUserName>
-                          <CommentUserDetails>• following</CommentUserDetails>
-                        </CommentUserBox>
-                        <CommentText>
-                          Adorei esse post, ajuda muito a usar Material UI com
-                          React! Adorei esse post,ajuda muito a usar Material UI
-                          com React! Adorei esse post, ajuda muito a usar
-                          Material UI com React! Adorei esse post, ajuda muito a
-                          usar Material UI com React! Adorei esse post, ajuda
-                          muito a usar Material UI com React!
-                        </CommentText>
-                      </CommentBox>
-                    </Comment>
+                    {postWithComments === post.id
+                      ? postComments.map((comment) => (
+                          <Comment key={comment.id}>
+                            <CommentUserIcon src={comment.commentAuthorImage} />
+                            <CommentBox>
+                              <CommentUserBox>
+                                <CommentUserName>
+                                  {comment.commentAuthorName}
+                                </CommentUserName>
+                                <CommentUserDetails>
+                                  {post.userId === comment.userId
+                                    ? `• post’s author`
+                                    : `• following`}
+                                </CommentUserDetails>
+                              </CommentUserBox>
+                              <CommentText>{comment.textComment}</CommentText>
+                            </CommentBox>
+                          </Comment>
+                        ))
+                      : ""}
+
                     <CreateComment>
-                      <CommentUserIcon src={post.userImage} />
+                      <CommentUserIcon src={auth.image} />
                       <input
+                        id="commentInput"
                         type="text"
                         placeholder="write a comment..."
+                        onChange={(e) => setNewComment(e.target.value)}
+                        value={newComment}
                       ></input>
-                      <button type="submit">
+                      <button
+                        type="submit"
+                        onClick={() => {
+                          createComment(post.id);
+                        }}
+                      >
                         <img src={PaperPlane} alt="Send" />
                       </button>
                     </CreateComment>
