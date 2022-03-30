@@ -7,6 +7,7 @@ const MainContainer = styled.div`
 
   @media (max-width: 620px) {
     flex-direction: column;
+    width: 100%;
   }
 `;
 
