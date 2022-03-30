@@ -1,21 +1,23 @@
-import { SearchContainer, Input, SearchButton, Result, UserResult, UserSearchImg } from './styles'
+import { SearchContainer, Input, SearchButton, Result, UserResult, UserSearchImg, Text, List } from './styles'
 import SearchIcon from '../../assets/SearchIcon.svg';
 import { DebounceInput } from "react-debounce-input";
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 
 export default function SearchBar() {
     const [textSearch, setTextSearch] = useState('');
     const [usersSearch, setUsersSearch] = useState(undefined);
     const [active, setActive] = useState(false);
     const navigate = useNavigate();
+    const { auth } = useAuth();
 
     useEffect(() => {
-        if(textSearch.length > 2){
+        if (textSearch.length > 2) {
             setActive(true);
-        } 
-        if(textSearch.length < 3) {
+        }
+        if (textSearch.length < 3) {
             setActive(false);
         }
         searchUsers(textSearch);
@@ -23,10 +25,10 @@ export default function SearchBar() {
     }, [textSearch])
 
     async function searchUsers(name) {
-        if(textSearch.length < 3){
+        if (textSearch.length < 3) {
             return
         }
-        const users = await api.searchUsersByName(name);
+        const users = await api.searchUsersByName(auth.token, name);
         setUsersSearch(users.data);
     }
     return (
@@ -49,7 +51,13 @@ export default function SearchBar() {
                             return (
                                 <UserResult key={user.id} onClick={() => navigate(`/user/${user.id}`)}>
                                     <UserSearchImg src={user.image} />
-                                    <p>{user.name}</p>
+                                    <List>
+                                        <Text>{user.name}</Text>
+                                        {user.follow.length > 0 ?
+                                            <Text follow={true}>{user.follow}</Text>
+                                            : ''
+                                        }
+                                    </List>
                                 </UserResult>
                             );
                         })}
