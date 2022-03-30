@@ -4,6 +4,7 @@ import axios from "axios";
 const BASE_URL = "http://localhost:5000";
 
 function createConfig(token) {
+  console.log("token do config front",token);
   return {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -63,7 +64,7 @@ async function getLikesByPostId(token, postId, userId) {
   return axios.get(`${BASE_URL}/likes/${postId}?userId=${userId}`, config);
 }
 
-async function postLike(token, postId) {
+async function postLike(token, postId) { 
   const config = createConfig(token);
   return axios.post(`${BASE_URL}/likes/${postId}`, {}, config);
 }
@@ -76,7 +77,20 @@ async function deleteSession(token, id){
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/sessions/${id}`, config);
 }
+async function follow(token,followingId){
+  console.log("token",token);
+  const config=createConfig(token);
+  return axios.post(`${BASE_URL}/follows/${followingId}`,{},config);
+}
+async function unfollow(token,followingId){
+  const config=createConfig(token);
+  return axios.delete(`${BASE_URL}/follows/${followingId}`,config);
+}
 
+async function getFollow(token,followingId){
+  const config=createConfig(token);
+  return axios.get(`${BASE_URL}/follows/${followingId}`,config);
+}
 const api = {
   createUser,
   login,
@@ -92,6 +106,9 @@ const api = {
   deleteLike,
   getPostByHashtag,
   deleteSession,
+  follow,
+  unfollow,
+  getFollow
 };
 
 export default api;

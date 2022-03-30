@@ -42,6 +42,7 @@ import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
 import ReactTooltip from 'react-tooltip';
 import styled from "styled-components";
+import { ButtonFollow } from "../../components/ButtonFollow/index.js";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -54,7 +55,7 @@ export default function Timeline() {
   const [disabled, setDisabled] = useState(false);
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
+ 
   const { hashtag } = useParams();
   const { id } = useParams();
 
@@ -77,7 +78,7 @@ export default function Timeline() {
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setPosts(response.data);
+        setPosts(response.data);       
       });
 
       promise.catch((error) => {
@@ -86,8 +87,10 @@ export default function Timeline() {
         setLoading(false);
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attPage]);
+
+    
 
   async function handleDelete(id) {
     setModalIsOpen(false);
@@ -155,7 +158,10 @@ export default function Timeline() {
       <Header />
       <FeedContainer>
         <SearchBarTimeline></SearchBarTimeline>
-        <PageTitle>{posts[0]?.name}'s posts</PageTitle>
+        <PageTitle>
+          {posts[0]?.name}'s posts
+            {posts[0]?.userId === auth.id ?'' : <ButtonFollow followingId={id}/>}
+        </PageTitle>
         <MainContainer>
           <PostsContainer>
             {loading ? <Loader /> : ""}
@@ -193,7 +199,7 @@ export default function Timeline() {
                           no, go back
                         </ButtonConfirm>
                         <ButtonDelete
-                          onClick={() => {handleDelete(post.postId)}}
+                          onClick={() => { handleDelete(post.postId) }}
                           disabled={isLoading}
                         >
                           {isLoading ? (
@@ -228,9 +234,9 @@ export default function Timeline() {
                       onChange={(e) => setText(e.target.value)}
                       onKeyDown={(e) => handlerKey(e)}
                     />
-                  ) : ( 
+                  ) : (
                     <PostText>
-                        {post.text}
+                      {post.text}
                     </PostText>
                   )}
                   <UserImg src={post.image} />
@@ -245,11 +251,11 @@ export default function Timeline() {
                       </QntLikes>
                       : <Tooltip
                         data-tip={
-                          post.usersLikes.length > 2 ? 
-                          `${post.usersLikes[0]}, ${post.usersLikes[1]} e outras ${post.usersLikes.length - 2} pessoas` 
-                          : post.usersLikes.length === 2 ? 
-                          `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram` 
-                          : `${post.usersLikes[0]} curtiu`
+                          post.usersLikes.length > 2 ?
+                            `${post.usersLikes[0]}, ${post.usersLikes[1]} e outras ${post.usersLikes.length - 2} pessoas`
+                            : post.usersLikes.length === 2 ?
+                              `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
+                              : `${post.usersLikes[0]} curtiu`
                         }>
                         <QntLikes>
                           {post.likes} likes

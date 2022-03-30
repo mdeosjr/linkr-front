@@ -43,6 +43,7 @@ import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
 import ReactTooltip from 'react-tooltip';
 import styled from "styled-components";
+import { ButtonFollow } from "../../components/ButtonFollow/index.js";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -56,7 +57,7 @@ export default function Timeline() {
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [deletePostId, setDeletePostId] = useState(null);
-  
+
 
   const { hashtag } = useParams();
 
@@ -75,7 +76,7 @@ export default function Timeline() {
   }
 
   useEffect(() => {
-    if(!auth){
+    if (!auth) {
       navigate("/")
     }
     if (auth && !hashtag) {
@@ -87,13 +88,13 @@ export default function Timeline() {
       });
 
       promise.catch((error) => {
-     
+
         setServerError(true);
         setLoading(false);
       });
-    } 
-    
-      if (auth && hashtag) {
+    }
+
+    if (auth && hashtag) {
 
       const promise = api.getPostByHashtag(auth.token, hashtag);
       promise.then((response) => {
@@ -102,7 +103,7 @@ export default function Timeline() {
         setPosts(response.data);
       })
       promise.catch((error) => {
-        
+
         setServerError(true);
         setLoading(false);
       })
@@ -271,11 +272,11 @@ export default function Timeline() {
                       </QntLikes>
                       : <Tooltip
                         data-tip={
-                          post.usersLikes.length > 2 ? 
-                          `${post.usersLikes[0]}, ${post.usersLikes[1]} e outras ${post.usersLikes.length - 2} pessoas` 
-                          : post.usersLikes.length === 2 ? 
-                          `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram` 
-                          : `${post.usersLikes[0]} curtiu`
+                          post.usersLikes.length > 2 ?
+                            `${post.usersLikes[0]}, ${post.usersLikes[1]} e outras ${post.usersLikes.length - 2} pessoas`
+                            : post.usersLikes.length === 2 ?
+                              `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
+                              : `${post.usersLikes[0]} curtiu`
                         }>
                         <QntLikes>
                           {post.likes} likes
