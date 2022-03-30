@@ -42,8 +42,9 @@ async function editPost(postId, token, text) {
   return axios.put(`${BASE_URL}/post/${postId}`, {text}, config);
 }
 
-async function searchUsersByName(name) {
-  return axios.get(`${BASE_URL}/users/search?name=${name}`);
+async function searchUsersByName(token, name) {
+  const config = createConfig(token)
+  return axios.get(`${BASE_URL}/users/search?name=${name}`, config);
 }
 
 async function getTrendingHashtags(token) {
