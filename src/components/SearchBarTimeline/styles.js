@@ -61,10 +61,6 @@ const UserResult = styled.li `
     display: flex;
     align-items: center;
     gap: 10px;
-    & p {
-        color: #515151;
-        font-size: 19px;
-    }
     &:hover{
         background-color: #d7d7d7;
         cursor: pointer;
@@ -82,6 +78,27 @@ const UserSearchImg = styled.img`
     border-radius: 50%;
 `
 
+const Text = styled.li`
+    color: ${props => props.follow ? '#C5C5C5' : '#515151'};
+    font-size: 19px;
+    ${props => props.follow ?
+        '&:last-child {list-style-type: "•"; padding-left: 10px; margin-left: 10px}'
+        : ''
+    }
+    
+`
+
+const List = styled.ul`
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    
+    @media (max-width: 750px) {
+        flex-direction: column;
+        gap: 5px;
+    }
+`
+
 export {
     SearchContainer,
     Input,
@@ -89,4 +106,6 @@ export {
     Result,
     UserResult,
     UserSearchImg,
+    Text,
+    List,
 }
