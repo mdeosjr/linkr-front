@@ -1,10 +1,11 @@
 import axios from "axios";
 
-//const BASE_URL = "https://linkr-api-sql.herokuapp.com"; 
+// const BASE_URL = "https://linkr-api-sql.herokuapp.com";
+
 const BASE_URL = "http://localhost:5000";
 
 function createConfig(token) {
-  console.log("token do config front",token);
+  console.log("token do config front", token);
   return {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -35,14 +36,14 @@ async function getUserPosts(token, userId) {
   return axios.get(`${BASE_URL}/user/${userId}`, config);
 }
 
-async function deletePost(id,token){
+async function deletePost(id, token) {
   const config = createConfig(token);
-  return axios.delete(`${BASE_URL}/post/${id}`,config);
+  return axios.delete(`${BASE_URL}/post/${id}`, config);
 }
 
 async function editPost(postId, token, text) {
   const config = createConfig(token);
-  return axios.put(`${BASE_URL}/post/${postId}`, {text}, config);
+  return axios.put(`${BASE_URL}/post/${postId}`, { text }, config);
 }
 
 async function searchUsersByName(name) {
@@ -54,9 +55,9 @@ async function getTrendingHashtags(token) {
   return axios.get(`${BASE_URL}/trendingHashtags`, config);
 }
 
-async function getPostByHashtag(token, hashtag){
-  const config=createConfig(token);
-  return axios.get(`${BASE_URL}/hashtag/${hashtag}`,config);
+async function getPostByHashtag(token, hashtag) {
+  const config = createConfig(token);
+  return axios.get(`${BASE_URL}/hashtag/${hashtag}`, config);
 }
 
 async function getLikesByPostId(token, postId, userId) {
@@ -64,7 +65,7 @@ async function getLikesByPostId(token, postId, userId) {
   return axios.get(`${BASE_URL}/likes/${postId}?userId=${userId}`, config);
 }
 
-async function postLike(token, postId) { 
+async function postLike(token, postId) {
   const config = createConfig(token);
   return axios.post(`${BASE_URL}/likes/${postId}`, {}, config);
 }
@@ -73,23 +74,37 @@ async function deleteLike(token, postId) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/likes/${postId}`, config);
 }
-async function deleteSession(token, id){
+async function deleteSession(token, id) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/sessions/${id}`, config);
 }
-async function follow(token,followingId){
-  console.log("token",token);
-  const config=createConfig(token);
-  return axios.post(`${BASE_URL}/follows/${followingId}`,{},config);
+async function follow(token, followingId) {
+  console.log("token", token);
+  const config = createConfig(token);
+  return axios.post(`${BASE_URL}/follows/${followingId}`, {}, config);
 }
-async function unfollow(token,followingId){
-  const config=createConfig(token);
-  return axios.delete(`${BASE_URL}/follows/${followingId}`,config);
+async function unfollow(token, followingId) {
+  const config = createConfig(token);
+  return axios.delete(`${BASE_URL}/follows/${followingId}`, config);
 }
 
-async function getFollow(token,followingId){
-  const config=createConfig(token);
-  return axios.get(`${BASE_URL}/follows/${followingId}`,config);
+async function createComment(token, postId, userId, textComment) {
+  const config = createConfig(token);
+  return axios.post(
+    `${BASE_URL}/comments/create`,
+    { postId, userId, textComment },
+    config
+  );
+}
+
+async function getPostComments(token, postId) {
+  const config = createConfig(token);
+  return axios.get(`${BASE_URL}/comments/${postId}`, config);
+}
+
+async function getFollow(token, followingId) {
+  const config = createConfig(token);
+  return axios.get(`${BASE_URL}/follows/${followingId}`, config);
 }
 const api = {
   createUser,
@@ -106,9 +121,11 @@ const api = {
   deleteLike,
   getPostByHashtag,
   deleteSession,
+  createComment,
+  getPostComments,
   follow,
   unfollow,
-  getFollow
+  getFollow,
 };
 
 export default api;
