@@ -1,9 +1,11 @@
 import axios from "axios";
 
 // const BASE_URL = "https://linkr-api-sql.herokuapp.com";
+
 const BASE_URL = "http://localhost:5000";
 
 function createConfig(token) {
+  console.log("token do config front", token);
   return {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -76,6 +78,15 @@ async function deleteSession(token, id) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/sessions/${id}`, config);
 }
+async function follow(token, followingId) {
+  console.log("token", token);
+  const config = createConfig(token);
+  return axios.post(`${BASE_URL}/follows/${followingId}`, {}, config);
+}
+async function unfollow(token, followingId) {
+  const config = createConfig(token);
+  return axios.delete(`${BASE_URL}/follows/${followingId}`, config);
+}
 
 async function createComment(token, postId, userId, textComment) {
   const config = createConfig(token);
@@ -91,6 +102,10 @@ async function getPostComments(token, postId) {
   return axios.get(`${BASE_URL}/comments/${postId}`, config);
 }
 
+async function getFollow(token, followingId) {
+  const config = createConfig(token);
+  return axios.get(`${BASE_URL}/follows/${followingId}`, config);
+}
 const api = {
   createUser,
   login,
@@ -108,6 +123,9 @@ const api = {
   deleteSession,
   createComment,
   getPostComments,
+  follow,
+  unfollow,
+  getFollow,
 };
 
 export default api;

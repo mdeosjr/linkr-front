@@ -142,7 +142,6 @@ export default function Timeline() {
     setPostId(id);
     setText(postText);
   }
-
   function submitEditPost(newText) {
     const promise = api.editPost(postId, auth.token, newText);
     promise.then(() => {
@@ -154,7 +153,6 @@ export default function Timeline() {
     });
     promise.catch((error) => console.log(error));
   }
-
   function handlerKey(e) {
     if (e.keyCode === 13) {
       setDisabled(true);
@@ -168,7 +166,6 @@ export default function Timeline() {
       setPostId("");
     }
   }
-
   function handlePosts() {
     setModalIsOpen(false);
     navigate("/timeline");

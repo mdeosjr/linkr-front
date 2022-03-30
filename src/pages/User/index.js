@@ -57,6 +57,7 @@ import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
+import { ButtonFollow } from "../../components/ButtonFollow/index.js";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -200,7 +201,15 @@ export default function Timeline() {
       <Header />
       <FeedContainer>
         <SearchBarTimeline></SearchBarTimeline>
-        <PageTitle>{posts[0]?.name}'s posts</PageTitle>
+        <PageTitle>
+          {posts[0]?.name}'s posts
+          {posts[0]?.userId === auth.id ? (
+            ""
+          ) : (
+            <ButtonFollow followingId={id} />
+          )}
+          {console.log("postsId", posts[0]?.userId)}
+        </PageTitle>
         <MainContainer>
           <PostsContainer>
             {loading ? <Loader /> : ""}
