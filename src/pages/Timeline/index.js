@@ -171,6 +171,8 @@ export default function Timeline() {
     navigate("/timeline");
   }
 
+  console.log("posts",posts);
+
   async function handleLike(postIdLiked, liked) {
     try {
       liked
@@ -212,7 +214,7 @@ export default function Timeline() {
             {posts.length === 0 &&
             serverError === false &&
             loading === false ? (
-              <PostWarning>There are no posts yet</PostWarning>
+              <PostWarning>You don't follow anyone yet. Search for new friends!</PostWarning>
             ) : (
               ""
             )}
