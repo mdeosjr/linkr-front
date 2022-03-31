@@ -45,6 +45,9 @@ import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
+import LoadingBar from "../../components/LoadingBar";
+import InfiniteScroll from 'react-infinite-scroll-component';
+import useInterval from 'use-interval'
 import {
   Comment,
   CommentBox,
@@ -71,7 +74,10 @@ export default function Timeline() {
   const [ativo, setAtivo] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [deletePostId, setDeletePostId] = useState(null);
-  const [postWithComments, setPostWithComments] = useState([]);
+  const [newPosts, setNewPosts] = useState(0);
+  const [postWithComments, setPostWithComments] = useState();
+  const [newComment, setNewComment] = useState([]);
+  const [postComments, setPostComments] = useState([]);
 
   const { hashtag } = useParams();
 
@@ -92,8 +98,9 @@ export default function Timeline() {
     if (!auth) {
       navigate("/");
     }
+
     if (auth && !hashtag) {
-      const promise = api.getTimelinePosts(auth.token);
+      const promise = api.getTimelinePosts(auth.token, auth.id);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
@@ -101,28 +108,38 @@ export default function Timeline() {
       });
 
       promise.catch((error) => {
-
         setServerError(true);
         setLoading(false);
       });
     }
 
     if (auth && hashtag) {
-
       const promise = api.getPostByHashtag(auth.token, hashtag);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
         setPosts(response.data);
       });
-      promise.catch((error) => {
 
+      promise.catch((error) => {
         setServerError(true);
         setLoading(false);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attPage, hashtag]);
+  }, [attPage, hashtag, postWithComments, postComments]);
+
+  useInterval(() => {
+    const promise = api.getTimelinePosts(auth.token, auth.id);
+    promise.then((response) => {
+      if (response.data?.length === posts?.length) {
+        return setNewPosts(0);
+      } else if (response.data?.length > posts?.length) {
+        return setNewPosts(response.data.length - posts.length);
+      }
+    })
+  }, 15000)
+
   async function handleDelete(id) {
     setModalIsOpen(false);
     setIsLoading(true);
@@ -184,15 +201,32 @@ export default function Timeline() {
     }
   }
 
-  function handleCommentsDisplay(postId) {
-    const postsArray = [...postWithComments];
-    if (postsArray.includes(postId)) {
-      postsArray.splice(postsArray.indexOf(postId), 1);
-      setPostWithComments(postsArray);
+  async function handleCommentsDisplay(postId) {
+    const comments = await api.getPostComments(auth.token, postId);
+    setPostComments(comments.data);
+    if (postWithComments === postId) {
+      setPostWithComments(0);
     } else {
-      postsArray.push(postId);
-      setPostWithComments(postsArray);
+      setPostWithComments(postId);
     }
+  }
+
+  async function createComment(postId) {
+    const promise = api.createComment(auth.token, postId, auth.id, newComment);
+
+    setNewComment("");
+
+    promise.then((response) => {
+      console.log(response);
+      const updatedComments = api.getPostComments(auth.token, postId);
+      updatedComments.then((comments) => {
+        console.log(comments.data);
+        setPostComments(comments.data);
+      });
+    });
+    promise.catch((error) => {
+      console.log(error);
+    });
   }
 
   return (
@@ -210,6 +244,7 @@ export default function Timeline() {
             ) : (
               ""
             )}
+            <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts} />
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
             serverError === false &&
@@ -338,7 +373,7 @@ export default function Timeline() {
                       <Icon src={CommentsIcon} />
 
                       <QntComments>
-                        {post.likes} <p>comments</p>
+                        {post.comments} <p>comments</p>
                       </QntComments>
                     </Comments>
 
@@ -356,32 +391,44 @@ export default function Timeline() {
                     </StyledLink>
                   </Post>
                   <CommentsContainer
-                    active={postWithComments.includes(post.id) ? true : false}
+                    active={postWithComments === post.id ? true : false}
                   >
-                    <Comment>
-                      <CommentUserIcon src={post.userImage} />
-                      <CommentBox>
-                        <CommentUserBox>
-                          <CommentUserName>João Avatares </CommentUserName>
-                          <CommentUserDetails>• following</CommentUserDetails>
-                        </CommentUserBox>
-                        <CommentText>
-                          Adorei esse post, ajuda muito a usar Material UI com
-                          React! Adorei esse post,ajuda muito a usar Material UI
-                          com React! Adorei esse post, ajuda muito a usar
-                          Material UI com React! Adorei esse post, ajuda muito a
-                          usar Material UI com React! Adorei esse post, ajuda
-                          muito a usar Material UI com React!
-                        </CommentText>
-                      </CommentBox>
-                    </Comment>
+                    {postWithComments === post.id
+                      ? postComments.map((comment) => (
+                          <Comment key={comment.id}>
+                            <CommentUserIcon src={comment.commentAuthorImage} />
+                            <CommentBox>
+                              <CommentUserBox>
+                                <CommentUserName>
+                                  {comment.commentAuthorName}
+                                </CommentUserName>
+                                <CommentUserDetails>
+                                  {post.userId === comment.userId
+                                    ? `• post’s author`
+                                    : `• following`}
+                                </CommentUserDetails>
+                              </CommentUserBox>
+                              <CommentText>{comment.textComment}</CommentText>
+                            </CommentBox>
+                          </Comment>
+                        ))
+                      : ""}
+
                     <CreateComment>
-                      <CommentUserIcon src={post.userImage} />
+                      <CommentUserIcon src={auth.image} />
                       <input
+                        id="commentInput"
                         type="text"
                         placeholder="write a comment..."
+                        onChange={(e) => setNewComment(e.target.value)}
+                        value={newComment}
                       ></input>
-                      <button type="submit">
+                      <button
+                        type="submit"
+                        onClick={() => {
+                          createComment(post.id);
+                        }}
+                      >
                         <img src={PaperPlane} alt="Send" />
                       </button>
                     </CreateComment>
