@@ -15,7 +15,7 @@ import SearchBar from "../SearchBar";
 import api from "../../services/api";
 
 export default function Header() {
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
   const [toggleLogout, setToggleLogout] = useState(false);
 
@@ -26,6 +26,7 @@ export default function Header() {
   const logoutUser = () => {
     api.deleteSession(auth.token, auth.id);
     localStorage.removeItem("auth");
+    setAuth(null);
     navigate("/");
   };
 
@@ -42,9 +43,9 @@ export default function Header() {
         <SearchBar></SearchBar>
         <HeaderUser>
           {toggleLogout ? (
-            <img src={downArrow} alt="UpArrow" onClick={HandleClick} />
+            <img src={upArrow} alt="UpArrow" onClick={HandleClick} />
           ) : (
-            <img src={upArrow} alt="DownArrow" onClick={HandleClick} />
+            <img src={downArrow} alt="DownArrow" onClick={HandleClick} />
           )}
           <HeaderUserImage src={auth.image} alt="user" onClick={HandleClick} />
           {toggleLogout ? (

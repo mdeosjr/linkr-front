@@ -46,7 +46,7 @@ export default function SearchBar() {
                 {usersSearch
                     ?
                     <Result active={active}>
-                        {usersSearch.map(user => {
+                        {usersSearch?.map(user => {
                             return (
                                 <UserResult key={user.id} onClick={() => navigate(`/user/${user.id}`)}>
                                     <UserSearchImg src={user.image} />
