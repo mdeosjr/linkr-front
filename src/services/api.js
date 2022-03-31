@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "https://linkr-api-sql.herokuapp.com";
-//const BASE_URL = "http://localhost:5000";
+//const BASE_URL = "https://linkr-api-sql.herokuapp.com";
+const BASE_URL = "http://localhost:5000";
 
 function createConfig(token) {
   return {
@@ -24,9 +24,9 @@ async function publishPost(data, token) {
   return axios.post(`${BASE_URL}/post`, data, createConfig(token));
 }
 
-async function getTimelinePosts(token, id, offset) {
+async function getTimelinePosts(token, offset) {
   const config = createConfig(token);
-  return axios.get(`${BASE_URL}/timeline/${id}?offset=${offset}`, config);
+  return axios.get(`${BASE_URL}/timeline/?offset=${offset}`, config);
 }
 
 async function getUserPosts(token, userId) {
@@ -109,6 +109,10 @@ async function getFollow(token, followingId) {
   return axios.get(`${BASE_URL}/follows/${followingId}`, config);
 }
 
+async function countFollows(token){
+  const config = createConfig(token);
+  return axios.get(`${BASE_URL}/countfollows`, config);
+}
 const api = {
   createUser,
   login,
@@ -129,6 +133,7 @@ const api = {
   follow,
   unfollow,
   getFollow,
+  countFollows
 };
 
 export default api;

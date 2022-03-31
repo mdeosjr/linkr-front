@@ -17,10 +17,7 @@ function Login() {
 
   function login(e) {
     e.preventDefault();
-    
-    if (auth) {
-      return navigate("/timeline");
-    }
+     
 
     const promise = api.login({ email, password });
 

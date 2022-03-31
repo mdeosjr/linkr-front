@@ -195,6 +195,7 @@ export default function Timeline() {
       console.log(error);
     });
   }
+  console.log("postsUsers",posts);
 
   return (
     <>

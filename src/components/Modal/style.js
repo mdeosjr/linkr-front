@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-
 const ButtonConfirm = styled.button`
     width: 134px;
     height: 37px;
@@ -35,8 +34,9 @@ const Form=styled.form`
     display: flex;
     justify-content: space-between;
 `
+
 export{
     ButtonConfirm,
     ButtonDelete,
-    Form   
+    Form,
 }

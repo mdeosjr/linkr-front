@@ -32,7 +32,6 @@ import FlexDiv from "../../components/FlexDiv.js";
 import editIcon from "../../assets/EditIcon.svg";
 import deleteIcon from "../../assets/DeleteIcon.svg";
 import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
-import SyncLoader from "react-spinners/PulseLoader";
 import SearchBarTimeline from "../../components/SearchBarTimeline/index.js";
 import ReactHashtag from "react-hashtag";
 import { Icon, Likes, QntLikes } from "../../components/Likes.js";
@@ -62,6 +61,7 @@ import {
   CreateComment,
   QntComments,
 } from "../../components/Comments.js";
+import ModalDelete from "../../components/Modal/index.js";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -79,6 +79,7 @@ export default function Timeline() {
   const [postWithComments, setPostWithComments] = useState();
   const [newComment, setNewComment] = useState([]);
   const [postComments, setPostComments] = useState([]);
+  const [following, setFollowing] = useState(null);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
 
@@ -86,16 +87,14 @@ export default function Timeline() {
 
   const { auth, attPage, setAttPage } = useAuth();
   const navigate = useNavigate();
-
+  
   Modal.setAppElement(document.querySelector(".root"));
+
   function openModal(id) {
     setModalIsOpen(true);
     setDeletePostId(id);
   }
 
-  function closeModal() {
-    setModalIsOpen(!modalIsOpen);
-  }
 
   useEffect(() => {
     if (!auth) {
@@ -103,7 +102,7 @@ export default function Timeline() {
     }
 
     if (auth && !hashtag) {
-      const promise = api.getTimelinePosts(auth.token, auth.id, offset);
+      const promise = api.getTimelinePosts(auth.token, offset);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
@@ -115,6 +114,13 @@ export default function Timeline() {
         setServerError(true);
         setLoading(false);
       });
+      const result = api.countFollows(auth.token);
+      result.then((response) => {
+        setFollowing(response.data.following);
+      });
+      result.catch((error) => {
+        setServerError(true);
+      })
     }
 
     if (auth && hashtag) {
@@ -129,9 +135,16 @@ export default function Timeline() {
         setServerError(true);
         setLoading(false);
       });
+      const result = api.countFollows(auth.token);
+      result.then((response) => {
+        setFollowing(response.data.following);
+      });
+      result.catch((error) => {
+        setServerError(true);
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attPage, hashtag, postWithComments, postComments]);
+  }, [attPage, hashtag, postWithComments, postComments,following]);
 
   useInterval(() => {
     const promise = api.getTimelinePosts(auth.token, auth.id, offset);
@@ -144,19 +157,7 @@ export default function Timeline() {
     });
   }, 15000);
 
-  async function handleDelete(id) {
-    setModalIsOpen(false);
-    setIsLoading(true);
-    try {
-      await api.deletePost(id, auth.token);
-      setIsLoading(false);
-      setDeletePostId(null);
-      setAttPage(!attPage);
-    } catch (error) {
-      alert("Erro ao deletar o post, tente novamente.");
-      setIsLoading(false);
-    }
-  }
+
 
   function changePost(id, postText) {
     setEdit(!edit);
@@ -188,11 +189,6 @@ export default function Timeline() {
       setEdit(false);
       setPostId("");
     }
-  }
-
-  function handlePosts() {
-    setModalIsOpen(false);
-    navigate("/timeline");
   }
 
   async function handleLike(postIdLiked, liked) {
@@ -255,6 +251,16 @@ export default function Timeline() {
 
   return (
     <>
+      <ModalDelete
+        deletePostId={deletePostId}
+        setModalIsOpen={setModalIsOpen}
+        modalIsOpen={modalIsOpen}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
+        setDeletePostId={setDeletePostId}
+        attPage={attPage}
+        setAttPage={setAttPage}
+      />
       <Header />
       <FeedContainer>
         <SearchBarTimeline></SearchBarTimeline>
@@ -276,13 +282,20 @@ export default function Timeline() {
               )}
               <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts} />
               {loading ? <Loader /> : ""}
-              {posts.length === 0 &&
+              {following==='0' ?(            
+            posts.length === 0 &&
               serverError === false &&
               loading === false ? (
-                <PostWarning>There are no posts yet</PostWarning>
-              ) : (
-                ""
-              )}
+              <PostWarning>You don't follow anyone yet. Search for new friends!</PostWarning>
+            ) : (
+              ""
+            )): (posts.length === 0 &&
+              serverError === false &&
+              loading === false ? (
+              <PostWarning>No posts found from your friends</PostWarning>
+            ) : (
+              ""
+            ))}
               {serverError ? (
                 <PostWarning>
                   An error occured while trying to fetch the posts, please refresh
@@ -297,33 +310,7 @@ export default function Timeline() {
                           onClick={() => navigate(`/user/${post.userId}`)}
                         >
                           {post.userName}
-                        </UserName>
-                        <Modal
-                          isOpen={modalIsOpen}
-                          onRequestClose={closeModal}
-                          style={customStyles}
-                        >
-                          <h1>
-                            Are you sure you want <br /> to delete this post?
-                          </h1>
-
-                          <Form>
-                            <ButtonConfirm onClick={() => handlePosts()}>
-                              no, go back
-                            </ButtonConfirm>
-                            <ButtonDelete
-                              onClick={() => handleDelete(deletePostId)}
-                              disabled={isLoading}
-                            >
-                              {isLoading ? (
-                                <SyncLoader color="white" size={5} />
-                              ) : (
-                                "yes, delete it"
-                              )}
-                            </ButtonDelete>
-                          </Form>
-                        </Modal>
-
+                        </UserName>                        
                         {post.userId === auth.id ? (
                           <Agroup>
                             <Edit
@@ -493,25 +480,3 @@ export default function Timeline() {
 
 const Tooltip = styled.a``;
 
-const customStyles = {
-  content: {
-    width: "597px",
-    height: "262px",
-    fontSize: "34px",
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    backgroundColor: "#333333",
-    borderRadius: "50px",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    color: "#FFFFFF",
-    textAlign: " center",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexWrap: "wrap",
-    zindex: "100",
-  },
-};
