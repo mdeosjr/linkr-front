@@ -141,8 +141,8 @@ export default function Timeline() {
       } else if (response.data?.length > posts?.length) {
         return setNewPosts(response.data.length - posts.length);
       }
-    })
-  }, 15000)
+    });
+  }, 15000);
 
   async function handleDelete(id) {
     setModalIsOpen(false);
@@ -512,5 +512,6 @@ const customStyles = {
     alignItems: "center",
     justifyContent: "center",
     flexWrap: "wrap",
+    zindex: "100",
   },
 };
