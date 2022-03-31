@@ -32,7 +32,6 @@ import FlexDiv from "../../components/FlexDiv.js";
 import editIcon from "../../assets/EditIcon.svg";
 import deleteIcon from "../../assets/DeleteIcon.svg";
 import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
-import SyncLoader from "react-spinners/PulseLoader";
 import SearchBarTimeline from "../../components/SearchBarTimeline/index.js";
 import ReactHashtag from "react-hashtag";
 import { Icon, Likes, QntLikes } from "../../components/Likes.js";
@@ -61,6 +60,7 @@ import {
   CreateComment,
   QntComments,
 } from "../../components/Comments.js";
+import ModalDelete from "../../components/Modal/index.js";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -88,11 +88,8 @@ export default function Timeline() {
   function openModal(id) {
     setModalIsOpen(true);
     setDeletePostId(id);
-  }
-
-  function closeModal() {
-    setModalIsOpen(!modalIsOpen);
-  }
+  } 
+  
 
   useEffect(() => {
     if (!auth) {
@@ -140,19 +137,7 @@ export default function Timeline() {
     })
   }, 15000)
 
-  async function handleDelete(id) {
-    setModalIsOpen(false);
-    setIsLoading(true);
-    try {
-      await api.deletePost(id, auth.token);
-      setIsLoading(false);
-      setDeletePostId(null);
-      setAttPage(!attPage);
-    } catch (error) {
-      alert("Erro ao deletar o post, tente novamente.");
-      setIsLoading(false);
-    }
-  }
+
 
   function changePost(id, postText) {
     setEdit(!edit);
@@ -183,12 +168,9 @@ export default function Timeline() {
       setPostId("");
     }
   }
-  function handlePosts() {
-    setModalIsOpen(false);
-    navigate("/timeline");
-  }
 
-  console.log("posts",posts);
+
+  console.log("posts", posts);
 
   async function handleLike(postIdLiked, liked) {
     try {
@@ -244,11 +226,11 @@ export default function Timeline() {
             ) : (
               ""
             )}
-            <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts} />
+            <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts}/>
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
-            serverError === false &&
-            loading === false ? (
+              serverError === false &&
+              loading === false ? (
               <PostWarning>You don't follow anyone yet. Search for new friends!</PostWarning>
             ) : (
               ""
@@ -268,31 +250,16 @@ export default function Timeline() {
                       >
                         {post.userName}
                       </UserName>
-                      <Modal
-                        isOpen={modalIsOpen}
-                        onRequestClose={closeModal}
-                        style={customStyles}
-                      >
-                        <h1>
-                          Are you sure you want <br /> to delete this post?
-                        </h1>
-
-                        <Form>
-                          <ButtonConfirm onClick={() => handlePosts()}>
-                            no, go back
-                          </ButtonConfirm>
-                          <ButtonDelete
-                            onClick={() => handleDelete(deletePostId)}
-                            disabled={isLoading}
-                          >
-                            {isLoading ? (
-                              <SyncLoader color="white" size={5} />
-                            ) : (
-                              "yes, delete it"
-                            )}
-                          </ButtonDelete>
-                        </Form>
-                      </Modal>
+                      <ModalDelete 
+                        deletePostId={deletePostId} 
+                        setModalIsOpen={setModalIsOpen} 
+                        modalIsOpen={modalIsOpen}
+                        isLoading={isLoading}
+                        setIsLoading={setIsLoading} 
+                        setDeletePostId={setDeletePostId} 
+                        attPage={attPage} 
+                        setAttPage={setAttPage} 
+                      />
 
                       {post.userId === auth.id ? (
                         <Agroup>
@@ -345,14 +312,12 @@ export default function Timeline() {
                         <Tooltip
                           data-tip={
                             post.usersLikes.length > 2
-                              ? `${post.usersLikes[0]}, ${
-                                  post.usersLikes[1]
-                                } e outras ${
-                                  post.usersLikes.length - 2
-                                } pessoas`
+                              ? `${post.usersLikes[0]}, ${post.usersLikes[1]
+                              } e outras ${post.usersLikes.length - 2
+                              } pessoas`
                               : post.usersLikes.length === 2
-                              ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
-                              : `${post.usersLikes[0]} curtiu`
+                                ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
+                                : `${post.usersLikes[0]} curtiu`
                           }
                         >
                           <QntLikes>{post.likes} likes</QntLikes>
@@ -395,23 +360,23 @@ export default function Timeline() {
                   >
                     {postWithComments === post.id
                       ? postComments.map((comment) => (
-                          <Comment key={comment.id}>
-                            <CommentUserIcon src={comment.commentAuthorImage} />
-                            <CommentBox>
-                              <CommentUserBox>
-                                <CommentUserName>
-                                  {comment.commentAuthorName}
-                                </CommentUserName>
-                                <CommentUserDetails>
-                                  {post.userId === comment.userId
-                                    ? `• post’s author`
-                                    : `• following`}
-                                </CommentUserDetails>
-                              </CommentUserBox>
-                              <CommentText>{comment.textComment}</CommentText>
-                            </CommentBox>
-                          </Comment>
-                        ))
+                        <Comment key={comment.id}>
+                          <CommentUserIcon src={comment.commentAuthorImage} />
+                          <CommentBox>
+                            <CommentUserBox>
+                              <CommentUserName>
+                                {comment.commentAuthorName}
+                              </CommentUserName>
+                              <CommentUserDetails>
+                                {post.userId === comment.userId
+                                  ? `• post’s author`
+                                  : `• following`}
+                              </CommentUserDetails>
+                            </CommentUserBox>
+                            <CommentText>{comment.textComment}</CommentText>
+                          </CommentBox>
+                        </Comment>
+                      ))
                       : ""}
 
                     <CreateComment>
@@ -451,24 +416,3 @@ export default function Timeline() {
 
 const Tooltip = styled.a``;
 
-const customStyles = {
-  content: {
-    width: "597px",
-    height: "262px",
-    fontSize: "34px",
-    top: "50%",
-    left: "50%",
-    right: "auto",
-    bottom: "auto",
-    backgroundColor: "#333333",
-    borderRadius: "50px",
-    marginRight: "-50%",
-    transform: "translate(-50%, -50%)",
-    color: "#FFFFFF",
-    textAlign: " center",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexWrap: "wrap",
-  },
-};
