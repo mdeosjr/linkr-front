@@ -394,16 +394,27 @@ export default function Timeline() {
                     {postWithComments === post.id
                       ? postComments.map((comment) => (
                           <Comment key={comment.id}>
-                            <CommentUserIcon src={comment.commentAuthorImage} />
+                            <CommentUserIcon
+                              src={comment.commentAuthorImage}
+                              onClick={() => {
+                                navigate(`/user/${comment.userId}`);
+                              }}
+                            />
                             <CommentBox>
                               <CommentUserBox>
-                                <CommentUserName>
+                                <CommentUserName
+                                  onClick={() => {
+                                    navigate(`/user/${comment.userId}`);
+                                  }}
+                                >
                                   {comment.commentAuthorName}
                                 </CommentUserName>
                                 <CommentUserDetails>
                                   {post.userId === comment.userId
                                     ? `• post’s author`
-                                    : `• following`}
+                                    : comment.following === true
+                                    ? `• following`
+                                    : ""}
                                 </CommentUserDetails>
                               </CommentUserBox>
                               <CommentText>{comment.textComment}</CommentText>
