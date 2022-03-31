@@ -47,6 +47,7 @@ import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import LoadingBar from "../../components/LoadingBar";
 import InfiniteScroll from 'react-infinite-scroll-component';
+import LoadingScroll from "../../components/ScrollLoading";
 import useInterval from 'use-interval'
 import {
   Comment,
@@ -79,6 +80,7 @@ export default function Timeline() {
   const [newComment, setNewComment] = useState([]);
   const [postComments, setPostComments] = useState([]);
   const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
 
   const { hashtag } = useParams();
 
@@ -239,6 +241,10 @@ export default function Timeline() {
         setLoading(false);
         setOffset(offset+10);
         setPosts([...posts, ...response.data]);
+
+        if (response.data?.length === 0) {
+          setHasMore(false);
+        }
     });
 
     promise.catch((error) => {
@@ -259,8 +265,8 @@ export default function Timeline() {
           <InfiniteScroll
             dataLength={posts.length}
             next={fetchMorePosts}
-            hasMore={true}
-            loader={<h4>Loading more posts...</h4>}
+            hasMore={hasMore}
+            loader={<LoadingScroll/>}
           >
             <PostsContainer>
               {hashtag === undefined ? (
