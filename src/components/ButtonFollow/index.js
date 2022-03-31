@@ -32,7 +32,6 @@ export function ButtonFollow({ followingId }) {
     async function follow(followingId) {
         setIsDisable(true);
         try {
-            console.log("na funçao follow", isFollow);
             if (isFollow === false) {
                 await api.follow(auth.token, followingId);
                 setIsFollow(true);

@@ -24,9 +24,9 @@ async function publishPost(data, token) {
   return axios.post(`${BASE_URL}/post`, data, createConfig(token));
 }
 
-async function getTimelinePosts(token) {
+async function getTimelinePosts(token, offset) {
   const config = createConfig(token);
-  return axios.get(`${BASE_URL}/timeline`, config);
+  return axios.get(`${BASE_URL}/timeline/?offset=${offset}`, config);
 }
 
 async function getUserPosts(token, userId) {
@@ -73,15 +73,18 @@ async function deleteLike(token, postId) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/likes/${postId}`, config);
 }
+
 async function deleteSession(token, id) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/sessions/${id}`, config);
 }
+
 async function follow(token, followingId) {
   console.log("token", token);
   const config = createConfig(token);
   return axios.post(`${BASE_URL}/follows/${followingId}`, {}, config);
 }
+
 async function unfollow(token, followingId) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/follows/${followingId}`, config);
