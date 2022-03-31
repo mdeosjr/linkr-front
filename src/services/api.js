@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = "https://linkr-api-sql.herokuapp.com";
-// const BASE_URL = "http://localhost:5000";
+//const BASE_URL = "https://linkr-api-sql.herokuapp.com";
+const BASE_URL = "http://localhost:5000";
 
 function createConfig(token) {
   return {
@@ -24,9 +24,9 @@ async function publishPost(data, token) {
   return axios.post(`${BASE_URL}/post`, data, createConfig(token));
 }
 
-async function getTimelinePosts(token, id) {
+async function getTimelinePosts(token, id, offset) {
   const config = createConfig(token);
-  return axios.get(`${BASE_URL}/timeline/${id}`, config);
+  return axios.get(`${BASE_URL}/timeline/${id}?offset=${offset}`, config);
 }
 
 async function getUserPosts(token, userId) {
@@ -73,15 +73,18 @@ async function deleteLike(token, postId) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/likes/${postId}`, config);
 }
+
 async function deleteSession(token, id) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/sessions/${id}`, config);
 }
+
 async function follow(token, followingId) {
   console.log("token", token);
   const config = createConfig(token);
   return axios.post(`${BASE_URL}/follows/${followingId}`, {}, config);
 }
+
 async function unfollow(token, followingId) {
   const config = createConfig(token);
   return axios.delete(`${BASE_URL}/follows/${followingId}`, config);
@@ -105,6 +108,7 @@ async function getFollow(token, followingId) {
   const config = createConfig(token);
   return axios.get(`${BASE_URL}/follows/${followingId}`, config);
 }
+
 const api = {
   createUser,
   login,

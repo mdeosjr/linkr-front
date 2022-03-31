@@ -78,6 +78,7 @@ export default function Timeline() {
   const [postWithComments, setPostWithComments] = useState();
   const [newComment, setNewComment] = useState([]);
   const [postComments, setPostComments] = useState([]);
+  const [offset, setOffset] = useState(0);
 
   const { hashtag } = useParams();
 
@@ -100,10 +101,11 @@ export default function Timeline() {
     }
 
     if (auth && !hashtag) {
-      const promise = api.getTimelinePosts(auth.token, auth.id);
+      const promise = api.getTimelinePosts(auth.token, auth.id, offset);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
+        setOffset(offset+10);
         setPosts(response.data);
       });
 
@@ -130,7 +132,7 @@ export default function Timeline() {
   }, [attPage, hashtag, postWithComments, postComments]);
 
   useInterval(() => {
-    const promise = api.getTimelinePosts(auth.token, auth.id);
+    const promise = api.getTimelinePosts(auth.token, auth.id, offset);
     promise.then((response) => {
       if (response.data?.length === posts?.length) {
         return setNewPosts(0);
@@ -159,6 +161,7 @@ export default function Timeline() {
     setPostId(id);
     setText(postText);
   }
+
   function submitEditPost(newText) {
     const promise = api.editPost(postId, auth.token, newText);
     promise.then(() => {
@@ -170,6 +173,7 @@ export default function Timeline() {
     });
     promise.catch((error) => console.log(error));
   }
+
   function handlerKey(e) {
     if (e.keyCode === 13) {
       setDisabled(true);
@@ -183,6 +187,7 @@ export default function Timeline() {
       setPostId("");
     }
   }
+
   function handlePosts() {
     setModalIsOpen(false);
     navigate("/timeline");
@@ -227,6 +232,21 @@ export default function Timeline() {
     });
   }
 
+  function fetchMorePosts() {
+    const promise = api.getTimelinePosts(auth.token, auth.id, offset);
+    promise.then((response) => {
+        setServerError(false);
+        setLoading(false);
+        setOffset(offset+10);
+        setPosts([...posts, ...response.data]);
+    });
+
+    promise.catch((error) => {
+        setServerError(true);
+        setLoading(false);
+    });
+  }
+
   return (
     <>
       <Header />
@@ -236,216 +256,223 @@ export default function Timeline() {
           {hashtag === undefined ? "timeline" : "#" + hashtag}
         </PageTitle>
         <MainContainer>
-          <PostsContainer>
-            {hashtag === undefined ? (
-              <PublishPostForm attPage={attPage} setAttPage={setAttPage} />
-            ) : (
-              ""
-            )}
-            <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts} />
-            {loading ? <Loader /> : ""}
-            {posts.length === 0 &&
-            serverError === false &&
-            loading === false ? (
-              <PostWarning>There are no posts yet</PostWarning>
-            ) : (
-              ""
-            )}
-            {serverError ? (
-              <PostWarning>
-                An error occured while trying to fetch the posts, please refresh
-                the page
-              </PostWarning>
-            ) : (
-              posts.map((post) => (
-                <>
-                  <Post active={true} key={post.id}>
-                    <FlexDiv>
-                      <UserName
-                        onClick={() => navigate(`/user/${post.userId}`)}
-                      >
-                        {post.userName}
-                      </UserName>
-                      <Modal
-                        isOpen={modalIsOpen}
-                        onRequestClose={closeModal}
-                        style={customStyles}
-                      >
-                        <h1>
-                          Are you sure you want <br /> to delete this post?
-                        </h1>
-
-                        <Form>
-                          <ButtonConfirm onClick={() => handlePosts()}>
-                            no, go back
-                          </ButtonConfirm>
-                          <ButtonDelete
-                            onClick={() => handleDelete(deletePostId)}
-                            disabled={isLoading}
-                          >
-                            {isLoading ? (
-                              <SyncLoader color="white" size={5} />
-                            ) : (
-                              "yes, delete it"
-                            )}
-                          </ButtonDelete>
-                        </Form>
-                      </Modal>
-
-                      {post.userId === auth.id ? (
-                        <Agroup>
-                          <Edit
-                            src={editIcon}
-                            onClick={() => changePost(post.id, post.textPost)}
-                          />
-                          <Delete
-                            src={deleteIcon}
-                            onClick={() => openModal(post.id)}
-                          />
-                        </Agroup>
-                      ) : (
-                        ""
-                      )}
-                    </FlexDiv>
-                    {edit && postId === post.id ? (
-                      <InputText
-                        autoFocus
-                        onFocus={(e) => e.currentTarget.select()}
-                        height={"50px"}
-                        ativo={ativo}
-                        disabled={disabled}
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        onKeyDown={(e) => handlerKey(e)}
-                      />
-                    ) : (
-                      <PostText>
-                        <ReactHashtag
-                          onHashtagClick={(val) =>
-                            navigate(
-                              `/hashtag/${val.substring(1).toLowerCase()}`
-                            )
-                          }
+          <InfiniteScroll
+            dataLength={posts.length}
+            next={fetchMorePosts}
+            hasMore={true}
+            loader={<h4>Loading more posts...</h4>}
+          >
+            <PostsContainer>
+              {hashtag === undefined ? (
+                <PublishPostForm attPage={attPage} setAttPage={setAttPage} />
+              ) : (
+                ""
+              )}
+              <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts} />
+              {loading ? <Loader /> : ""}
+              {posts.length === 0 &&
+              serverError === false &&
+              loading === false ? (
+                <PostWarning>There are no posts yet</PostWarning>
+              ) : (
+                ""
+              )}
+              {serverError ? (
+                <PostWarning>
+                  An error occured while trying to fetch the posts, please refresh
+                  the page
+                </PostWarning>
+              ) : (
+                posts.map((post) => (
+                  <>
+                    <Post active={true} key={post.id}>
+                      <FlexDiv>
+                        <UserName
+                          onClick={() => navigate(`/user/${post.userId}`)}
                         >
-                          {post.textPost}
-                        </ReactHashtag>
-                      </PostText>
-                    )}
-                    <UserImg src={post.userImage} />
-                    <Likes>
-                      <Icon
-                        src={post.liked ? HeartFilled : HeartOutlined}
-                        onClick={() => handleLike(post.id, post.liked)}
-                      />
-                      {post.usersLikes.length === 0 ? (
-                        <QntLikes>{post.likes} likes</QntLikes>
-                      ) : (
-                        <Tooltip
-                          data-tip={
-                            post.usersLikes.length > 2
-                              ? `${post.usersLikes[0]}, ${
-                                  post.usersLikes[1]
-                                } e outras ${
-                                  post.usersLikes.length - 2
-                                } pessoas`
-                              : post.usersLikes.length === 2
-                              ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
-                              : `${post.usersLikes[0]} curtiu`
-                          }
+                          {post.userName}
+                        </UserName>
+                        <Modal
+                          isOpen={modalIsOpen}
+                          onRequestClose={closeModal}
+                          style={customStyles}
                         >
-                          <QntLikes>{post.likes} likes</QntLikes>
-                        </Tooltip>
-                      )}
-                      <ReactTooltip
-                        place="bottom"
-                        type="light"
-                        effect="float"
-                      />
-                    </Likes>
+                          <h1>
+                            Are you sure you want <br /> to delete this post?
+                          </h1>
 
-                    <Comments
-                      onClick={() => {
-                        handleCommentsDisplay(post.id);
-                      }}
-                    >
-                      <Icon src={CommentsIcon} />
+                          <Form>
+                            <ButtonConfirm onClick={() => handlePosts()}>
+                              no, go back
+                            </ButtonConfirm>
+                            <ButtonDelete
+                              onClick={() => handleDelete(deletePostId)}
+                              disabled={isLoading}
+                            >
+                              {isLoading ? (
+                                <SyncLoader color="white" size={5} />
+                              ) : (
+                                "yes, delete it"
+                              )}
+                            </ButtonDelete>
+                          </Form>
+                        </Modal>
 
-                      <QntComments>
-                        {post.comments} <p>comments</p>
-                      </QntComments>
-                    </Comments>
-
-                    <StyledLink href={post.link} target="_blank">
-                      <LinkDetailsContainer href={post.link} target="_blank">
-                        <LinkDetailsDescriptionContainer>
-                          <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
-                          <LinkDetailsDescription>
-                            {post.linkDescription}
-                          </LinkDetailsDescription>
-                          <LinkParagraph>{post.link}</LinkParagraph>
-                        </LinkDetailsDescriptionContainer>
-                        <LinkDetailsImg src={post.linkImage} />
-                      </LinkDetailsContainer>
-                    </StyledLink>
-                  </Post>
-                  <CommentsContainer
-                    active={postWithComments === post.id ? true : false}
-                  >
-                    {postWithComments === post.id
-                      ? postComments.map((comment) => (
-                          <Comment key={comment.id}>
-                            <CommentUserIcon
-                              src={comment.commentAuthorImage}
-                              onClick={() => {
-                                navigate(`/user/${comment.userId}`);
-                              }}
+                        {post.userId === auth.id ? (
+                          <Agroup>
+                            <Edit
+                              src={editIcon}
+                              onClick={() => changePost(post.id, post.textPost)}
                             />
-                            <CommentBox>
-                              <CommentUserBox>
-                                <CommentUserName
-                                  onClick={() => {
-                                    navigate(`/user/${comment.userId}`);
-                                  }}
-                                >
-                                  {comment.commentAuthorName}
-                                </CommentUserName>
-                                <CommentUserDetails>
-                                  {post.userId === comment.userId
-                                    ? `• post’s author`
-                                    : comment.following === true
-                                    ? `• following`
-                                    : ""}
-                                </CommentUserDetails>
-                              </CommentUserBox>
-                              <CommentText>{comment.textComment}</CommentText>
-                            </CommentBox>
-                          </Comment>
-                        ))
-                      : ""}
+                            <Delete
+                              src={deleteIcon}
+                              onClick={() => openModal(post.id)}
+                            />
+                          </Agroup>
+                        ) : (
+                          ""
+                        )}
+                      </FlexDiv>
+                      {edit && postId === post.id ? (
+                        <InputText
+                          autoFocus
+                          onFocus={(e) => e.currentTarget.select()}
+                          height={"50px"}
+                          ativo={ativo}
+                          disabled={disabled}
+                          value={text}
+                          onChange={(e) => setText(e.target.value)}
+                          onKeyDown={(e) => handlerKey(e)}
+                        />
+                      ) : (
+                        <PostText>
+                          <ReactHashtag
+                            onHashtagClick={(val) =>
+                              navigate(
+                                `/hashtag/${val.substring(1).toLowerCase()}`
+                              )
+                            }
+                          >
+                            {post.textPost}
+                          </ReactHashtag>
+                        </PostText>
+                      )}
+                      <UserImg src={post.userImage} />
+                      <Likes>
+                        <Icon
+                          src={post.liked ? HeartFilled : HeartOutlined}
+                          onClick={() => handleLike(post.id, post.liked)}
+                        />
+                        {post.usersLikes.length === 0 ? (
+                          <QntLikes>{post.likes} likes</QntLikes>
+                        ) : (
+                          <Tooltip
+                            data-tip={
+                              post.usersLikes.length > 2
+                                ? `${post.usersLikes[0]}, ${
+                                    post.usersLikes[1]
+                                  } e outras ${
+                                    post.usersLikes.length - 2
+                                  } pessoas`
+                                : post.usersLikes.length === 2
+                                ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
+                                : `${post.usersLikes[0]} curtiu`
+                            }
+                          >
+                            <QntLikes>{post.likes} likes</QntLikes>
+                          </Tooltip>
+                        )}
+                        <ReactTooltip
+                          place="bottom"
+                          type="light"
+                          effect="float"
+                        />
+                      </Likes>
 
-                    <CreateComment>
-                      <CommentUserIcon src={auth.image} />
-                      <input
-                        id="commentInput"
-                        type="text"
-                        placeholder="write a comment..."
-                        onChange={(e) => setNewComment(e.target.value)}
-                        value={newComment}
-                      ></input>
-                      <button
-                        type="submit"
+                      <Comments
                         onClick={() => {
-                          createComment(post.id);
+                          handleCommentsDisplay(post.id);
                         }}
                       >
-                        <img src={PaperPlane} alt="Send" />
-                      </button>
-                    </CreateComment>
-                  </CommentsContainer>
-                </>
-              ))
-            )}
-          </PostsContainer>
+                        <Icon src={CommentsIcon} />
+
+                        <QntComments>
+                          {post.comments} <p>comments</p>
+                        </QntComments>
+                      </Comments>
+
+                      <StyledLink href={post.link} target="_blank">
+                        <LinkDetailsContainer href={post.link} target="_blank">
+                          <LinkDetailsDescriptionContainer>
+                            <LinkDetailsTitle>{post.linkTitle}</LinkDetailsTitle>
+                            <LinkDetailsDescription>
+                              {post.linkDescription}
+                            </LinkDetailsDescription>
+                            <LinkParagraph>{post.link}</LinkParagraph>
+                          </LinkDetailsDescriptionContainer>
+                          <LinkDetailsImg src={post.linkImage} />
+                        </LinkDetailsContainer>
+                      </StyledLink>
+                    </Post>
+                    <CommentsContainer
+                      active={postWithComments === post.id ? true : false}
+                    >
+                      {postWithComments === post.id
+                        ? postComments.map((comment) => (
+                            <Comment key={comment.id}>
+                              <CommentUserIcon
+                                src={comment.commentAuthorImage}
+                                onClick={() => {
+                                  navigate(`/user/${comment.userId}`);
+                                }}
+                              />
+                              <CommentBox>
+                                <CommentUserBox>
+                                  <CommentUserName
+                                    onClick={() => {
+                                      navigate(`/user/${comment.userId}`);
+                                    }}
+                                  >
+                                    {comment.commentAuthorName}
+                                  </CommentUserName>
+                                  <CommentUserDetails>
+                                    {post.userId === comment.userId
+                                      ? `• post’s author`
+                                      : comment.following === true
+                                      ? `• following`
+                                      : ""}
+                                  </CommentUserDetails>
+                                </CommentUserBox>
+                                <CommentText>{comment.textComment}</CommentText>
+                              </CommentBox>
+                            </Comment>
+                          ))
+                        : ""}
+
+                      <CreateComment>
+                        <CommentUserIcon src={auth.image} />
+                        <input
+                          id="commentInput"
+                          type="text"
+                          placeholder="write a comment..."
+                          onChange={(e) => setNewComment(e.target.value)}
+                          value={newComment}
+                        ></input>
+                        <button
+                          type="submit"
+                          onClick={() => {
+                            createComment(post.id);
+                          }}
+                        >
+                          <img src={PaperPlane} alt="Send" />
+                        </button>
+                      </CreateComment>
+                    </CommentsContainer>
+                  </>
+                ))
+              )}
+            </PostsContainer>
+          </InfiniteScroll>
           <HashtagsSidebar
             attPage={attPage}
             setAttPage={setAttPage}
