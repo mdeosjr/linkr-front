@@ -15,7 +15,7 @@ import SearchBar from "../SearchBar";
 import api from "../../services/api";
 
 export default function Header() {
-  const { auth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
   const [toggleLogout, setToggleLogout] = useState(false);
 
@@ -26,6 +26,7 @@ export default function Header() {
   const logoutUser = () => {
     api.deleteSession(auth.token, auth.id);
     localStorage.removeItem("auth");
+    setAuth(null);
     navigate("/");
   };
 
