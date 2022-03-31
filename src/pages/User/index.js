@@ -362,7 +362,9 @@ export default function Timeline() {
                                 <CommentUserDetails>
                                   {post.userId === comment.userId
                                     ? `• post’s author`
-                                    : `• following`}
+                                    : comment.following === true
+                                    ? `• following`
+                                    : ""}
                                 </CommentUserDetails>
                               </CommentUserBox>
                               <CommentText>{comment.textComment}</CommentText>

@@ -45,7 +45,8 @@ const QntComments = styled.p`
 
 const CommentsContainer = styled.div`
   display: ${(props) => (props.active ? "flex" : "none")};
-  margin-top: -10px;
+  margin-top: -26px;
+  margin-bottom: 16px;
   padding-top: 10px;
   background-color: #1e1e1e;
   max-width: 620px;
