@@ -46,8 +46,8 @@ import { PostsContainer } from "../../components/PostsContainer.js";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import LoadingBar from "../../components/LoadingBar";
-import InfiniteScroll from 'react-infinite-scroll-component';
-import useInterval from 'use-interval'
+import InfiniteScroll from "react-infinite-scroll-component";
+import useInterval from "use-interval";
 import {
   Comment,
   CommentBox,
@@ -137,8 +137,8 @@ export default function Timeline() {
       } else if (response.data?.length > posts?.length) {
         return setNewPosts(response.data.length - posts.length);
       }
-    })
-  }, 15000)
+    });
+  }, 15000);
 
   async function handleDelete(id) {
     setModalIsOpen(false);
@@ -242,7 +242,11 @@ export default function Timeline() {
             ) : (
               ""
             )}
-            <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts} />
+            <LoadingBar
+              quantity={newPosts}
+              setAttPage={setAttPage}
+              setNewPosts={setNewPosts}
+            />
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
             serverError === false &&
@@ -479,5 +483,6 @@ const customStyles = {
     alignItems: "center",
     justifyContent: "center",
     flexWrap: "wrap",
+    zindex: "100",
   },
 };
