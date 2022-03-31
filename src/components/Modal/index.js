@@ -75,6 +75,6 @@ const customStyles = {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        flexWrap: "wrap",
+        flexWrap: "wrap",        
     },
 };

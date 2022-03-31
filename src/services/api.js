@@ -24,9 +24,9 @@ async function publishPost(data, token) {
   return axios.post(`${BASE_URL}/post`, data, createConfig(token));
 }
 
-async function getTimelinePosts(token, id) {
+async function getTimelinePosts(token) {
   const config = createConfig(token);
-  return axios.get(`${BASE_URL}/timeline/${id}`, config);
+  return axios.get(`${BASE_URL}/timeline`, config);
 }
 
 async function getUserPosts(token, userId) {
@@ -105,6 +105,11 @@ async function getFollow(token, followingId) {
   const config = createConfig(token);
   return axios.get(`${BASE_URL}/follows/${followingId}`, config);
 }
+
+async function countFollows(token){
+  const config = createConfig(token);
+  return axios.get(`${BASE_URL}/countfollows`, config);
+}
 const api = {
   createUser,
   login,
@@ -125,6 +130,7 @@ const api = {
   follow,
   unfollow,
   getFollow,
+  countFollows
 };
 
 export default api;

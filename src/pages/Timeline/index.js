@@ -78,18 +78,22 @@ export default function Timeline() {
   const [postWithComments, setPostWithComments] = useState();
   const [newComment, setNewComment] = useState([]);
   const [postComments, setPostComments] = useState([]);
+  const [following, setFollowing] = useState(null);
 
   const { hashtag } = useParams();
 
   const { auth, attPage, setAttPage } = useAuth();
   const navigate = useNavigate();
+  console.log(auth.id);
+
 
   Modal.setAppElement(document.querySelector(".root"));
+
   function openModal(id) {
     setModalIsOpen(true);
     setDeletePostId(id);
-  } 
-  
+  }
+
 
   useEffect(() => {
     if (!auth) {
@@ -97,7 +101,7 @@ export default function Timeline() {
     }
 
     if (auth && !hashtag) {
-      const promise = api.getTimelinePosts(auth.token, auth.id);
+      const promise = api.getTimelinePosts(auth.token);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
@@ -108,6 +112,13 @@ export default function Timeline() {
         setServerError(true);
         setLoading(false);
       });
+      const result = api.countFollows(auth.token);
+      result.then((response) => {
+        setFollowing(response.data.following);
+      });
+      result.catch((error) => {
+        setServerError(true);
+      })
     }
 
     if (auth && hashtag) {
@@ -122,9 +133,16 @@ export default function Timeline() {
         setServerError(true);
         setLoading(false);
       });
+      const result = api.countFollows(auth.token);
+      result.then((response) => {
+        setFollowing(response.data.following);
+      });
+      result.catch((error) => {
+        setServerError(true);
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attPage, hashtag, postWithComments, postComments]);
+  }, [attPage, hashtag, postWithComments, postComments,following]);
 
   useInterval(() => {
     const promise = api.getTimelinePosts(auth.token, auth.id);
@@ -169,9 +187,6 @@ export default function Timeline() {
     }
   }
 
-
-  console.log("posts", posts);
-
   async function handleLike(postIdLiked, liked) {
     try {
       liked
@@ -211,8 +226,21 @@ export default function Timeline() {
     });
   }
 
+  console.log("posts", posts);
+  console.log("following", following);
+
   return (
     <>
+      <ModalDelete
+        deletePostId={deletePostId}
+        setModalIsOpen={setModalIsOpen}
+        modalIsOpen={modalIsOpen}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
+        setDeletePostId={setDeletePostId}
+        attPage={attPage}
+        setAttPage={setAttPage}
+      />
       <Header />
       <FeedContainer>
         <SearchBarTimeline></SearchBarTimeline>
@@ -226,15 +254,23 @@ export default function Timeline() {
             ) : (
               ""
             )}
-            <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts}/>
+            <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts} />
             {loading ? <Loader /> : ""}
-            {posts.length === 0 &&
+            {following==='0' ?(            
+            posts.length === 0 &&
               serverError === false &&
               loading === false ? (
               <PostWarning>You don't follow anyone yet. Search for new friends!</PostWarning>
             ) : (
               ""
-            )}
+            )): (posts.length === 0 &&
+              serverError === false &&
+              loading === false ? (
+              <PostWarning>No posts found from your friends</PostWarning>
+            ) : (
+              ""
+            ))}
+
             {serverError ? (
               <PostWarning>
                 An error occured while trying to fetch the posts, please refresh
@@ -250,16 +286,6 @@ export default function Timeline() {
                       >
                         {post.userName}
                       </UserName>
-                      <ModalDelete 
-                        deletePostId={deletePostId} 
-                        setModalIsOpen={setModalIsOpen} 
-                        modalIsOpen={modalIsOpen}
-                        isLoading={isLoading}
-                        setIsLoading={setIsLoading} 
-                        setDeletePostId={setDeletePostId} 
-                        attPage={attPage} 
-                        setAttPage={setAttPage} 
-                      />
 
                       {post.userId === auth.id ? (
                         <Agroup>
@@ -360,34 +386,34 @@ export default function Timeline() {
                   >
                     {postWithComments === post.id
                       ? postComments.map((comment) => (
-                          <Comment key={comment.id}>
-                            <CommentUserIcon
-                              src={comment.commentAuthorImage}
-                              onClick={() => {
-                                navigate(`/user/${comment.userId}`);
-                              }}
-                            />
-                            <CommentBox>
-                              <CommentUserBox>
-                                <CommentUserName
-                                  onClick={() => {
-                                    navigate(`/user/${comment.userId}`);
-                                  }}
-                                >
-                                  {comment.commentAuthorName}
-                                </CommentUserName>
-                                <CommentUserDetails>
-                                  {post.userId === comment.userId
-                                    ? `• post’s author`
-                                    : comment.following === true
+                        <Comment key={comment.id}>
+                          <CommentUserIcon
+                            src={comment.commentAuthorImage}
+                            onClick={() => {
+                              navigate(`/user/${comment.userId}`);
+                            }}
+                          />
+                          <CommentBox>
+                            <CommentUserBox>
+                              <CommentUserName
+                                onClick={() => {
+                                  navigate(`/user/${comment.userId}`);
+                                }}
+                              >
+                                {comment.commentAuthorName}
+                              </CommentUserName>
+                              <CommentUserDetails>
+                                {post.userId === comment.userId
+                                  ? `• post’s author`
+                                  : comment.following === true
                                     ? `• following`
                                     : ""}
-                                </CommentUserDetails>
-                              </CommentUserBox>
-                              <CommentText>{comment.textComment}</CommentText>
-                            </CommentBox>
-                          </Comment>
-                        ))
+                              </CommentUserDetails>
+                            </CommentUserBox>
+                            <CommentText>{comment.textComment}</CommentText>
+                          </CommentBox>
+                        </Comment>
+                      ))
                       : ""}
 
                     <CreateComment>
