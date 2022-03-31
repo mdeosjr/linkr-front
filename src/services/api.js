@@ -45,7 +45,7 @@ async function editPost(postId, token, text) {
 }
 
 async function searchUsersByName(token, name) {
-  const config = createConfig(token)
+  const config = createConfig(token);
   return axios.get(`${BASE_URL}/users/search?name=${name}`, config);
 }
 

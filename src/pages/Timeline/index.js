@@ -360,23 +360,34 @@ export default function Timeline() {
                   >
                     {postWithComments === post.id
                       ? postComments.map((comment) => (
-                        <Comment key={comment.id}>
-                          <CommentUserIcon src={comment.commentAuthorImage} />
-                          <CommentBox>
-                            <CommentUserBox>
-                              <CommentUserName>
-                                {comment.commentAuthorName}
-                              </CommentUserName>
-                              <CommentUserDetails>
-                                {post.userId === comment.userId
-                                  ? `• post’s author`
-                                  : `• following`}
-                              </CommentUserDetails>
-                            </CommentUserBox>
-                            <CommentText>{comment.textComment}</CommentText>
-                          </CommentBox>
-                        </Comment>
-                      ))
+                          <Comment key={comment.id}>
+                            <CommentUserIcon
+                              src={comment.commentAuthorImage}
+                              onClick={() => {
+                                navigate(`/user/${comment.userId}`);
+                              }}
+                            />
+                            <CommentBox>
+                              <CommentUserBox>
+                                <CommentUserName
+                                  onClick={() => {
+                                    navigate(`/user/${comment.userId}`);
+                                  }}
+                                >
+                                  {comment.commentAuthorName}
+                                </CommentUserName>
+                                <CommentUserDetails>
+                                  {post.userId === comment.userId
+                                    ? `• post’s author`
+                                    : comment.following === true
+                                    ? `• following`
+                                    : ""}
+                                </CommentUserDetails>
+                              </CommentUserBox>
+                              <CommentText>{comment.textComment}</CommentText>
+                            </CommentBox>
+                          </Comment>
+                        ))
                       : ""}
 
                     <CreateComment>

@@ -30,7 +30,9 @@ const QntComments = styled.p`
 
   &:hover {
     text-decoration: underline;
-    color: red;
+  }
+  p:hover {
+    text-decoration: underline;
   }
   @media (max-width: 620px) {
     p {
@@ -43,7 +45,8 @@ const QntComments = styled.p`
 
 const CommentsContainer = styled.div`
   display: ${(props) => (props.active ? "flex" : "none")};
-  margin-top: -10px;
+  margin-top: -26px;
+  margin-bottom: 16px;
   padding-top: 10px;
   background-color: #1e1e1e;
   max-width: 620px;
@@ -81,6 +84,7 @@ const CommentUserIcon = styled.img`
   width: 39px;
   margin-right: 18px;
   border-radius: 50px;
+  cursor: pointer;
 `;
 
 const CommentBox = styled.div`
@@ -106,8 +110,12 @@ const CommentUserName = styled.p`
   font-size: 14px;
   line-height: 17px;
   margin-right: 4px;
+  cursor: pointer;
 
   color: #f3f3f3;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const CommentUserDetails = styled.span`

@@ -42,9 +42,9 @@ export default function Header() {
         <SearchBar></SearchBar>
         <HeaderUser>
           {toggleLogout ? (
-            <img src={downArrow} alt="UpArrow" onClick={HandleClick} />
+            <img src={upArrow} alt="UpArrow" onClick={HandleClick} />
           ) : (
-            <img src={upArrow} alt="DownArrow" onClick={HandleClick} />
+            <img src={downArrow} alt="DownArrow" onClick={HandleClick} />
           )}
           <HeaderUserImage src={auth.image} alt="user" onClick={HandleClick} />
           {toggleLogout ? (

@@ -9,7 +9,7 @@ const Post = styled.div`
   border-radius: 16px;
   position: relative;
   padding: 19px 23px 20px 87px;
-  margin-top: 16px;
+  margin-bottom: 16px;
   z-index: 2;
 
   @media (max-width: 620px) {
