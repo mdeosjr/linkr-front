@@ -58,6 +58,7 @@ import { PostsContainer } from "../../components/PostsContainer.js";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { ButtonFollow } from "../../components/ButtonFollow/index.js";
+import ModalDelete from "../../components/Modal/index.js";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -73,6 +74,7 @@ export default function Timeline() {
   const [postWithComments, setPostWithComments] = useState();
   const [newComment, setNewComment] = useState([]);
   const [postComments, setPostComments] = useState([]);
+  const [deletePostId,setDeletePostId]=useState(null);
 
   const { hashtag } = useParams();
   const { id } = useParams();
@@ -81,14 +83,12 @@ export default function Timeline() {
   const navigate = useNavigate();
 
   Modal.setAppElement(document.querySelector(".root"));
-  function openModal() {
+  function openModal(id) {    
     setModalIsOpen(true);
+    setDeletePostId(id);
   }
 
-  function closeModal() {
-    setModalIsOpen(!modalIsOpen);
-  }
-
+  
   useEffect(() => {
     if (auth !== undefined) {
       const promise = api.getUserPosts(auth.token, id);
@@ -152,10 +152,6 @@ export default function Timeline() {
     }
   }
 
-  function handlePosts() {
-    setModalIsOpen(false);
-    navigate("/timeline");
-  }
 
   async function handleLike(postIdLiked, liked) {
     try {
@@ -195,10 +191,20 @@ export default function Timeline() {
       console.log(error);
     });
   }
-  console.log("postsUsers",posts);
+  console.log("postsUsers", posts);
 
   return (
     <>
+    <ModalDelete
+        deletePostId={deletePostId}
+        setModalIsOpen={setModalIsOpen}
+        modalIsOpen={modalIsOpen}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
+        setDeletePostId={setDeletePostId}
+        attPage={attPage}
+        setAttPage={setAttPage}
+      />
       <Header />
       <FeedContainer>
         <SearchBarTimeline></SearchBarTimeline>
@@ -215,8 +221,8 @@ export default function Timeline() {
           <PostsContainer>
             {loading ? <Loader /> : ""}
             {posts.length === 0 &&
-            serverError === false &&
-            loading === false ? (
+              serverError === false &&
+              loading === false ? (
               <PostWarning>There are no posts yet</PostWarning>
             ) : (
               ""
@@ -236,34 +242,6 @@ export default function Timeline() {
                       >
                         {post.name}
                       </UserName>
-                      <Modal
-                        isOpen={modalIsOpen}
-                        onRequestClose={closeModal}
-                        style={customStyles}
-                      >
-                        <h1>
-                          Are you sure you want <br /> to delete this post?
-                        </h1>
-
-                        <Form>
-                          <ButtonConfirm onClick={() => handlePosts()}>
-                            no, go back
-                          </ButtonConfirm>
-                          <ButtonDelete
-                            onClick={() => {
-                              handleDelete(post.postId);
-                            }}
-                            disabled={isLoading}
-                          >
-                            {isLoading ? (
-                              <SyncLoader color="white" size={5} />
-                            ) : (
-                              "yes, delete it"
-                            )}
-                          </ButtonDelete>
-                        </Form>
-                      </Modal>
-
                       {post.userId === auth.id ? (
                         <Agroup>
                           <Edit
@@ -272,7 +250,7 @@ export default function Timeline() {
                           />
                           <Delete
                             src={deleteIcon}
-                            onClick={() => openModal()}
+                            onClick={() => openModal(post.postId)}
                           />
                         </Agroup>
                       ) : (
@@ -305,14 +283,12 @@ export default function Timeline() {
                         <Tooltip
                           data-tip={
                             post.usersLikes.length > 2
-                              ? `${post.usersLikes[0]}, ${
-                                  post.usersLikes[1]
-                                } e outras ${
-                                  post.usersLikes.length - 2
-                                } pessoas`
+                              ? `${post.usersLikes[0]}, ${post.usersLikes[1]
+                              } e outras ${post.usersLikes.length - 2
+                              } pessoas`
                               : post.usersLikes.length === 2
-                              ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
-                              : `${post.usersLikes[0]} curtiu`
+                                ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
+                                : `${post.usersLikes[0]} curtiu`
                           }
                         >
                           <QntLikes>{post.likes} likes</QntLikes>
@@ -353,25 +329,25 @@ export default function Timeline() {
                   >
                     {postWithComments === post.postId
                       ? postComments.map((comment) => (
-                          <Comment key={comment.id}>
-                            <CommentUserIcon src={comment.commentAuthorImage} />
-                            <CommentBox>
-                              <CommentUserBox>
-                                <CommentUserName>
-                                  {comment.commentAuthorName}
-                                </CommentUserName>
-                                <CommentUserDetails>
-                                  {post.userId === comment.userId
-                                    ? `• post’s author`
-                                    : comment.following === true
+                        <Comment key={comment.id}>
+                          <CommentUserIcon src={comment.commentAuthorImage} />
+                          <CommentBox>
+                            <CommentUserBox>
+                              <CommentUserName>
+                                {comment.commentAuthorName}
+                              </CommentUserName>
+                              <CommentUserDetails>
+                                {post.userId === comment.userId
+                                  ? `• post’s author`
+                                  : comment.following === true
                                     ? `• following`
                                     : ""}
-                                </CommentUserDetails>
-                              </CommentUserBox>
-                              <CommentText>{comment.textComment}</CommentText>
-                            </CommentBox>
-                          </Comment>
-                        ))
+                              </CommentUserDetails>
+                            </CommentUserBox>
+                            <CommentText>{comment.textComment}</CommentText>
+                          </CommentBox>
+                        </Comment>
+                      ))
                       : ""}
 
                     <CreateComment>
