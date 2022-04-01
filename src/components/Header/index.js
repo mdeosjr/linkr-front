@@ -48,14 +48,12 @@ export default function Header() {
             <img src={downArrow} alt="DownArrow" onClick={HandleClick} />
           )}
           <HeaderUserImage src={auth.image} alt="user" onClick={HandleClick} />
-          {toggleLogout ? (
+          {toggleLogout && (
             <HeaderLogout>
               <Link to="/" onClick={logoutUser}>
                 Logout
               </Link>
             </HeaderLogout>
-          ) : (
-            ""
           )}
         </HeaderUser>
       </HeaderContainer>

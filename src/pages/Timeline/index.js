@@ -34,6 +34,7 @@ import HeartFilled from "../../assets/HeartFilled.svg";
 import HeartOutlined from "../../assets/HeartOutlined.svg";
 import CommentsIcon from "../../assets/CommentsIcon.svg";
 import PaperPlane from "../../assets/PaperPlane.svg";
+import RepostIcon from "../../assets/RepostIcon.svg";
 import HashtagsSidebar from "../../components/HashtagsSidebar/index.js";
 import { MainContainer } from "../../components/MainContainer.js";
 import { PostsContainer } from "../../components/PostsContainer.js";
@@ -56,7 +57,8 @@ import {
   CreateComment,
   QntComments,
 } from "../../components/Comments.js";
-import ModalDelete from "../../components/Modal/index.js";
+import ModalConfirm from "../../components/Modal/index.js";
+import { Reposts, QntReposts, RepostInfo, RepostText } from "../../components/Reposts.js";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -77,19 +79,26 @@ export default function Timeline() {
   const [following, setFollowing] = useState(null);
   const [limit, setLimit] = useState(10);
   const [hasMore, setHasMore] = useState(true);
+  const [repostId, setRepostId] = useState(null);
   const [count, setCount] = useState(null);
 
   const { hashtag } = useParams();
 
   const { auth, attPage, setAttPage } = useAuth();
   const navigate = useNavigate();
-  
+
   Modal.setAppElement(document.querySelector(".root"));
 
   function openModal(id) {
     setModalIsOpen(true);
     setDeletePostId(id);
   }
+
+  function openModalRepost(id){
+    setModalIsOpen(true);
+    setRepostId(id);
+  }
+
 
   useEffect(() => {
     if (!auth) {
@@ -248,23 +257,20 @@ export default function Timeline() {
     
     const promise = api.getTimelinePosts(auth.token, limit);
     promise.then((response) => {
-        setServerError(false);
-        setLoading(false);
-        setPosts([...response.data]);
+      setServerError(false);
+      setLoading(false);
+      setPosts([...response.data]);
     });
 
     promise.catch((error) => {
-        setServerError(true);
-        setLoading(false);
+      setServerError(true);
+      setLoading(false);
     });
   }
 
-  console.log("COUNT ", count);
-  console.log("LIMIT ", limit);
-
   return (
     <>
-      <ModalDelete
+      <ModalConfirm
         deletePostId={deletePostId}
         setModalIsOpen={setModalIsOpen}
         modalIsOpen={modalIsOpen}
@@ -273,6 +279,8 @@ export default function Timeline() {
         setDeletePostId={setDeletePostId}
         attPage={attPage}
         setAttPage={setAttPage}
+        repostId={repostId}
+        setRepostId={setRepostId}
       />
       <Header />
       <FeedContainer>
@@ -285,7 +293,7 @@ export default function Timeline() {
             dataLength={posts.length}
             next={fetchMorePosts}
             hasMore={hasMore}
-            loader={<LoadingScroll/>}
+            loader={<LoadingScroll />}
           >
             <PostsContainer>
               {hashtag === undefined ? (
@@ -295,20 +303,20 @@ export default function Timeline() {
               )}
               <LoadingBar quantity={newPosts} setAttPage={setAttPage} setNewPosts={setNewPosts} />
               {loading ? <Loader /> : ""}
-              {following==='0' ?(            
-            posts.length === 0 &&
-              serverError === false &&
-              loading === false ? (
-              <PostWarning>You don't follow anyone yet. Search for new friends!</PostWarning>
-            ) : (
-              ""
-            )): (posts.length === 0 &&
-              serverError === false &&
-              loading === false ? (
-              <PostWarning>No posts found from your friends</PostWarning>
-            ) : (
-              ""
-            ))}
+              {following === '0' ? (
+                posts.length === 0 &&
+                  serverError === false &&
+                  loading === false ? (
+                  <PostWarning>You don't follow anyone yet. Search for new friends!</PostWarning>
+                ) : (
+                  ""
+                )) : (posts.length === 0 &&
+                  serverError === false &&
+                  loading === false ? (
+                  <PostWarning>No posts found from your friends</PostWarning>
+                ) : (
+                  ""
+                ))}
               {serverError ? (
                 <PostWarning>
                   An error occured while trying to fetch the posts, please refresh
@@ -317,13 +325,27 @@ export default function Timeline() {
               ) : (
                 posts.map((post) => (
                   <>
-                    <Post active={true} key={post.id}>
+                    {post.repostId
+                      ? <RepostInfo>
+                        <Icon src={RepostIcon}></Icon>
+                        <RepostText>
+                          Re-posted by <span>{
+                            post.reposterId === auth.id 
+                            ? 'you'
+                            : post.reposterName
+                            }</span>
+                        </RepostText>
+                      </RepostInfo>
+                      : console.log("WTF")
+                    }
+
+                    <Post active={true} key={post.repostId ? post.repostId : post.id}>
                       <FlexDiv>
                         <UserName
                           onClick={() => navigate(`/user/${post.userId}`)}
                         >
                           {post.userName}
-                        </UserName>                        
+                        </UserName>
                         {post.userId === auth.id ? (
                           <Agroup>
                             <Edit
@@ -375,14 +397,12 @@ export default function Timeline() {
                           <Tooltip
                             data-tip={
                               post.usersLikes.length > 2
-                                ? `${post.usersLikes[0]}, ${
-                                    post.usersLikes[1]
-                                  } e outras ${
-                                    post.usersLikes.length - 2
-                                  } pessoas`
+                                ? `${post.usersLikes[0]}, ${post.usersLikes[1]
+                                } e outras ${post.usersLikes.length - 2
+                                } pessoas`
                                 : post.usersLikes.length === 2
-                                ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
-                                : `${post.usersLikes[0]} curtiu`
+                                  ? `${post.usersLikes[0]} e ${post.usersLikes[1]} curtiram`
+                                  : `${post.usersLikes[0]} curtiu`
                             }
                           >
                             <QntLikes>{post.likes} likes</QntLikes>
@@ -407,6 +427,17 @@ export default function Timeline() {
                         </QntComments>
                       </Comments>
 
+                      <Reposts
+                        onClick={() => openModalRepost(post.id)}
+                      >
+
+                        <Icon src={RepostIcon}></Icon>
+                        <QntReposts>
+                          {post.reposts} re-post
+                        </QntReposts>
+
+                      </Reposts>
+
                       <StyledLink href={post.link} target="_blank">
                         <LinkDetailsContainer href={post.link} target="_blank">
                           <LinkDetailsDescriptionContainer>
@@ -425,34 +456,34 @@ export default function Timeline() {
                     >
                       {postWithComments === post.id
                         ? postComments.map((comment) => (
-                            <Comment key={comment.id}>
-                              <CommentUserIcon
-                                src={comment.commentAuthorImage}
-                                onClick={() => {
-                                  navigate(`/user/${comment.userId}`);
-                                }}
-                              />
-                              <CommentBox>
-                                <CommentUserBox>
-                                  <CommentUserName
-                                    onClick={() => {
-                                      navigate(`/user/${comment.userId}`);
-                                    }}
-                                  >
-                                    {comment.commentAuthorName}
-                                  </CommentUserName>
-                                  <CommentUserDetails>
-                                    {post.userId === comment.userId
-                                      ? `• post’s author`
-                                      : comment.following === true
+                          <Comment key={comment.id}>
+                            <CommentUserIcon
+                              src={comment.commentAuthorImage}
+                              onClick={() => {
+                                navigate(`/user/${comment.userId}`);
+                              }}
+                            />
+                            <CommentBox>
+                              <CommentUserBox>
+                                <CommentUserName
+                                  onClick={() => {
+                                    navigate(`/user/${comment.userId}`);
+                                  }}
+                                >
+                                  {comment.commentAuthorName}
+                                </CommentUserName>
+                                <CommentUserDetails>
+                                  {post.userId === comment.userId
+                                    ? `• post’s author`
+                                    : comment.following === true
                                       ? `• following`
                                       : ""}
-                                  </CommentUserDetails>
-                                </CommentUserBox>
-                                <CommentText>{comment.textComment}</CommentText>
-                              </CommentBox>
-                            </Comment>
-                          ))
+                                </CommentUserDetails>
+                              </CommentUserBox>
+                              <CommentText>{comment.textComment}</CommentText>
+                            </CommentBox>
+                          </Comment>
+                        ))
                         : ""}
 
                       <CreateComment>

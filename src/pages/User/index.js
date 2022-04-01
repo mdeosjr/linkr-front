@@ -58,7 +58,9 @@ import { PostsContainer } from "../../components/PostsContainer.js";
 import ReactTooltip from "react-tooltip";
 import styled from "styled-components";
 import { ButtonFollow } from "../../components/ButtonFollow/index.js";
-import ModalDelete from "../../components/Modal/index.js";
+import ModalConfirm from "../../components/Modal/index.js";
+import { Reposts, QntReposts, RepostInfo, RepostText } from "../../components/Reposts.js";
+import RepostIcon from "../../assets/RepostIcon.svg";
 
 export default function Timeline() {
   const [posts, setPosts] = useState([]);
@@ -74,7 +76,8 @@ export default function Timeline() {
   const [postWithComments, setPostWithComments] = useState();
   const [newComment, setNewComment] = useState([]);
   const [postComments, setPostComments] = useState([]);
-  const [deletePostId,setDeletePostId]=useState(null);
+  const [deletePostId, setDeletePostId] = useState(null);
+  const [repostId, setRepostId] = useState(null);
 
   const { hashtag } = useParams();
   const { id } = useParams();
@@ -83,12 +86,12 @@ export default function Timeline() {
   const navigate = useNavigate();
 
   Modal.setAppElement(document.querySelector(".root"));
-  function openModal(id) {    
+  function openModal(id) {
     setModalIsOpen(true);
     setDeletePostId(id);
   }
 
-  
+
   useEffect(() => {
     if (auth !== undefined) {
       const promise = api.getUserPosts(auth.token, id);
@@ -193,9 +196,13 @@ export default function Timeline() {
   }
   console.log("postsUsers", posts);
 
+  function openModalRepost(repostId){
+    setModalIsOpen(true);
+    setRepostId(repostId);
+  }
   return (
     <>
-    <ModalDelete
+      <ModalConfirm
         deletePostId={deletePostId}
         setModalIsOpen={setModalIsOpen}
         modalIsOpen={modalIsOpen}
@@ -204,6 +211,8 @@ export default function Timeline() {
         setDeletePostId={setDeletePostId}
         attPage={attPage}
         setAttPage={setAttPage}
+        repostId={repostId}
+        setRepostId={setRepostId}
       />
       <Header />
       <FeedContainer>
@@ -235,6 +244,19 @@ export default function Timeline() {
             ) : (
               posts.map((post) => (
                 <>
+                  {post.repostId
+                    ? <RepostInfo>
+                      <Icon src={RepostIcon}></Icon>
+                      <RepostText>
+                        Re-posted by <span>{
+                          post.reposterId === auth.id
+                            ? 'you'
+                            : post.reposterName
+                        }</span>
+                      </RepostText>
+                    </RepostInfo>
+                    : console.log("WTF")
+                  }
                   <Post active={true} key={post.postId}>
                     <FlexDiv>
                       <UserName
@@ -311,6 +333,18 @@ export default function Timeline() {
                         {post.comments} <p>comments</p>
                       </QntComments>
                     </Comments>
+
+                    <Reposts
+                        onClick={() => openModalRepost(post.postId)}
+                      >
+
+                        <Icon src={RepostIcon}></Icon>
+                        <QntReposts>
+                          {post.reposts} re-post
+                        </QntReposts>
+
+                      </Reposts>
+
                     <StyledLink href={post.link} target="_blank">
                       <LinkDetailsContainer href={post.link} target="_blank">
                         <LinkDetailsDescriptionContainer>
