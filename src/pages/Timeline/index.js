@@ -77,6 +77,7 @@ export default function Timeline() {
   const [following, setFollowing] = useState(null);
   const [limit, setLimit] = useState(10);
   const [hasMore, setHasMore] = useState(true);
+  const [count, setCount] = useState(null);
 
   const { hashtag } = useParams();
 
@@ -90,7 +91,6 @@ export default function Timeline() {
     setDeletePostId(id);
   }
 
-
   useEffect(() => {
     if (!auth) {
       navigate("/");
@@ -102,10 +102,14 @@ export default function Timeline() {
         setServerError(false);
         setLoading(false);
         setPosts(response.data);
-        console.log(response.data)
-
-        if (response.data.length <= limit) {
+        if (response.data.length === 0) {
           setHasMore(false);
+          return setCount(0) 
+        }
+
+        setCount(response.data[0].countPosts)
+        if (response.data[0].countPosts <= limit) {
+          return setHasMore(false);
         }
 
         setLimit(limit+10);
@@ -147,15 +151,13 @@ export default function Timeline() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attPage, hashtag, following, postComments, postWithComments]);
 
-  console.log(posts)
-
   useInterval(() => {
     const promise = api.getTimelinePosts(auth.token, limit);
     promise.then((response) => {
       if (response.data?.length === posts?.length) {
         return setNewPosts(0);
-      } else if (response.data?.length > posts?.length) {
-        return setNewPosts(response.data.length - posts.length);
+      } else if (response.data?.length > count) {
+        return setNewPosts(response.data.length - count);
       }
     });
   }, 15000);
@@ -206,6 +208,9 @@ export default function Timeline() {
 
   async function handleCommentsDisplay(postId) {
     const comments = await api.getPostComments(auth.token, postId);
+
+    setNewComment("");
+    
     setPostComments(comments.data);
     if (postWithComments === postId) {
       setPostWithComments(0);
@@ -233,13 +238,12 @@ export default function Timeline() {
   }
 
   function fetchMorePosts() {
-    if (posts.length >= limit) {
+    if (posts.length < count) {
       setHasMore(true);
-      setLimit(limit+10);
     }
 
-    if (posts.length < limit) {
-      setHasMore(false)
+    if (posts.length === count) {
+      return setHasMore(false);
     }
     
     const promise = api.getTimelinePosts(auth.token, limit);
@@ -254,6 +258,9 @@ export default function Timeline() {
         setLoading(false);
     });
   }
+
+  console.log("COUNT ", count);
+  console.log("LIMIT ", limit);
 
   return (
     <>
