@@ -9,6 +9,9 @@ const SidebarContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-left: 25px;
+  margin-top: 0px;
+  position: sticky;
+  top: 40px;
   @media (max-width: 920px) {
     display: none;
   }

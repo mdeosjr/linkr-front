@@ -109,9 +109,14 @@ async function getFollow(token, followingId) {
   return axios.get(`${BASE_URL}/follows/${followingId}`, config);
 }
 
-async function countFollows(token){
+async function countFollows(token) {
   const config = createConfig(token);
   return axios.get(`${BASE_URL}/countfollows`, config);
+}
+
+async function createRepost(token, postId) {
+  const config = createConfig(token);
+  return axios.post(`${BASE_URL}/repost/${postId}`, {}, config)
 }
 const api = {
   createUser,
@@ -133,7 +138,8 @@ const api = {
   follow,
   unfollow,
   getFollow,
-  countFollows
+  countFollows,
+  createRepost
 };
 
 export default api;

@@ -2,10 +2,10 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../hooks/useAuth";
 import api from "../../services/api";
-import { ButtonConfirm, ButtonDelete, Form, StyleModal } from "./style";
+import { ButtonConfirm, ButtonDelete, Form } from "./style";
 import SyncLoader from "react-spinners/PulseLoader";
 
-export default function ModalDelete({ isLoading, modalIsOpen, deletePostId, setModalIsOpen, setIsLoading, setDeletePostId, attPage, setAttPage }) {
+export default function ModalConfirm({ isLoading, modalIsOpen, deletePostId, setModalIsOpen, setIsLoading, setDeletePostId, attPage, setAttPage, repostId, setRepostId }) {
     const navigate = useNavigate();
     const { auth } = useAuth();
 
@@ -13,12 +13,12 @@ export default function ModalDelete({ isLoading, modalIsOpen, deletePostId, setM
         setModalIsOpen(!modalIsOpen);
     }
     async function handleDelete(id) {
-        setModalIsOpen(false);
         setIsLoading(true);
         try {
             await api.deletePost(id, auth.token);
             setIsLoading(false);
             setDeletePostId(null);
+            setModalIsOpen(false);
             setAttPage(!attPage);
         } catch (error) {
             alert("Erro ao deletar o post, tente novamente.");
@@ -29,14 +29,31 @@ export default function ModalDelete({ isLoading, modalIsOpen, deletePostId, setM
         setModalIsOpen(false);
         navigate("/timeline");
     }
+
+    async function handleRepost(id) {
+        setIsLoading(true);
+        try {
+            await api.createRepost(auth.token, id);
+            setIsLoading(false);
+            setModalIsOpen(false);
+            setRepostId(null);
+            setAttPage(!attPage);
+        } catch (error) {
+            alert("Ocorreu um erro ao repostar");
+            setIsLoading(false);
+        }
+    }
+
     return (
         <Modal
             isOpen={modalIsOpen}
             onRequestClose={closeModal}
             style={customStyles}
         >
+            
             <h1>
-                Are you sure you want <br /> to delete this post?
+                Are you sure you want <br /> to {repostId ? 're-post this link' :
+                'delete this post'}?
             </h1>
 
             <Form>
@@ -44,12 +61,16 @@ export default function ModalDelete({ isLoading, modalIsOpen, deletePostId, setM
                     no, go back
                 </ButtonConfirm>
                 <ButtonDelete
-                    onClick={() => handleDelete(deletePostId)}
+                    onClick={() => 
+                        repostId ? handleRepost(repostId) 
+                        : deletePostId ? handleDelete(deletePostId) : handlePosts()
+                    }
                     disabled={isLoading}
                 >
                     {isLoading ? (
                         <SyncLoader color="white" size={5} />
                     ) : (
+                        repostId ? "Yes, share!" :
                         "yes, delete it"
                     )}
                 </ButtonDelete>
