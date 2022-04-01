@@ -22,11 +22,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../../services/api.js";
 import useAuth from "../../hooks/useAuth";
-import {
-  ButtonConfirm,
-  ButtonDelete,
-  Form,
-} from "../../components/Modal/style.js";
 import { InputText } from "../../components/PublishPost.js";
 import FlexDiv from "../../components/FlexDiv.js";
 import editIcon from "../../assets/EditIcon.svg";
@@ -82,9 +77,10 @@ export default function Timeline() {
   const [newComment, setNewComment] = useState([]);
   const [postComments, setPostComments] = useState([]);
   const [following, setFollowing] = useState(null);
-  const [offset, setOffset] = useState(0);
+  const [limit, setLimit] = useState(10);
   const [hasMore, setHasMore] = useState(true);
   const [repostId, setRepostId] = useState(null);
+  const [count, setCount] = useState(null);
 
   const { hashtag } = useParams();
 
@@ -110,12 +106,22 @@ export default function Timeline() {
     }
 
     if (auth && !hashtag) {
-      const promise = api.getTimelinePosts(auth.token, offset);
+      const promise = api.getTimelinePosts(auth.token, limit);
       promise.then((response) => {
         setServerError(false);
         setLoading(false);
-        setOffset(offset + 10);
         setPosts(response.data);
+        if (response.data.length === 0) {
+          setHasMore(false);
+          return setCount(0) 
+        }
+
+        setCount(response.data[0].countPosts)
+        if (response.data[0].countPosts <= limit) {
+          return setHasMore(false);
+        }
+
+        setLimit(limit+10);
       });
 
       promise.catch((error) => {
@@ -152,19 +158,18 @@ export default function Timeline() {
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [attPage, hashtag, postWithComments, postComments, following]);
+  }, [attPage, hashtag, following, postComments, postWithComments]);
 
   useInterval(() => {
-    const promise = api.getTimelinePosts(auth.token, auth.id, offset);
+    const promise = api.getTimelinePosts(auth.token, limit);
     promise.then((response) => {
       if (response.data?.length === posts?.length) {
         return setNewPosts(0);
-      } else if (response.data?.length > posts?.length) {
-        return setNewPosts(response.data.length - posts.length);
+      } else if (response.data?.length > count) {
+        return setNewPosts(response.data.length - count);
       }
     });
   }, 15000);
-
 
 
   function changePost(id, postText) {
@@ -212,6 +217,9 @@ export default function Timeline() {
 
   async function handleCommentsDisplay(postId) {
     const comments = await api.getPostComments(auth.token, postId);
+
+    setNewComment("");
+    
     setPostComments(comments.data);
     if (postWithComments === postId) {
       setPostWithComments(0);
@@ -239,16 +247,19 @@ export default function Timeline() {
   }
 
   function fetchMorePosts() {
-    const promise = api.getTimelinePosts(auth.token, auth.id, offset);
+    if (posts.length < count) {
+      setHasMore(true);
+    }
+
+    if (posts.length === count) {
+      return setHasMore(false);
+    }
+    
+    const promise = api.getTimelinePosts(auth.token, limit);
     promise.then((response) => {
       setServerError(false);
       setLoading(false);
-      setOffset(offset + 10);
-      setPosts([...posts, ...response.data]);
-
-      if (response.data?.length === 0) {
-        setHasMore(false);
-      }
+      setPosts([...response.data]);
     });
 
     promise.catch((error) => {
