@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const Post = styled.div`
+const PostComponent = styled.div`
   display: ${(props) => (!props.active ? "none" : "block")};
   background-color: #171717;
   max-width: 620px;
@@ -212,7 +212,7 @@ const StyledLink = styled.a`
 `;
 
 export {
-  Post,
+  PostComponent,
   UserImg,
   LinkDetailsContainer,
   PostText,
@@ -224,5 +224,5 @@ export {
   LinkParagraph,
   PostWarning,
   TrashIcon,
-  StyledLink,
+  StyledLink
 };

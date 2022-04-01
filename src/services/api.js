@@ -24,9 +24,9 @@ async function publishPost(data, token) {
   return axios.post(`${BASE_URL}/post`, data, createConfig(token));
 }
 
-async function getTimelinePosts(token, id, offset) {
+async function getTimelinePosts(token, offset) {
   const config = createConfig(token);
-  return axios.get(`${BASE_URL}/timeline/${id}?offset=${offset}`, config);
+  return axios.get(`${BASE_URL}/timeline/?offset=${offset}`, config);
 }
 
 async function getUserPosts(token, userId) {

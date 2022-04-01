@@ -13,16 +13,10 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   let navigate = useNavigate();
-  const { auth, setAuth } = useAuth();
+  const { setAuth } = useAuth();
 
   function login(e) {
     e.preventDefault();
-    setAuth(null);
-
-    console.log(auth);
-    if (auth) {
-      return navigate("/timeline");
-    }
 
     const promise = api.login({ email, password });
 
@@ -44,7 +38,6 @@ function Login() {
   function loginSucess(response) {
     localStorage.setItem("auth", JSON.stringify(response.data));
     setAuth(response.data);
-    console.log("auth", auth);
     navigate("/timeline");
   }
 

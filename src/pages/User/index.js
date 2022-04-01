@@ -8,13 +8,13 @@ import {
   LinkDetailsDescriptionContainer,
   LinkDetailsImg,
   LinkDetailsTitle,
-  Post,
+  PostComponent,
   PostText,
   PostWarning,
   StyledLink,
   UserImg,
   UserName,
-} from "../../components/Post.js";
+} from "../../components/Post/style.js";
 import {
   Comment,
   CommentBox,
@@ -46,7 +46,6 @@ import deleteIcon from "../../assets/DeleteIcon.svg";
 import { Edit, Agroup, Delete } from "../../components/InteractionBox.js";
 import SyncLoader from "react-spinners/PulseLoader";
 import SearchBarTimeline from "../../components/SearchBarTimeline/index.js";
-import ReactHashtag from "react-hashtag";
 import { Icon, Likes, QntLikes } from "../../components/Likes.js";
 import HeartFilled from "../../assets/HeartFilled.svg";
 import HeartOutlined from "../../assets/HeartOutlined.svg";
@@ -228,7 +227,7 @@ export default function Timeline() {
             ) : (
               posts.map((post) => (
                 <>
-                  <Post active={true} key={post.postId}>
+                  <PostComponent active={true} key={post.postId}>
                     <FlexDiv>
                       <UserName
                         onClick={() => navigate(`/user/${post.userId}`)}
@@ -346,7 +345,7 @@ export default function Timeline() {
                         <LinkDetailsImg src={post.linkImage} />
                       </LinkDetailsContainer>
                     </StyledLink>
-                  </Post>
+                  </PostComponent>
                   <CommentsContainer
                     active={postWithComments === post.postId ? true : false}
                   >
