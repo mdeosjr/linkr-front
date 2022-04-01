@@ -17,7 +17,6 @@ function Login() {
 
   function login(e) {
     e.preventDefault();
-     
 
     const promise = api.login({ email, password });
 
